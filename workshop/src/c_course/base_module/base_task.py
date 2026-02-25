@@ -24,7 +24,7 @@ class TestItem:
 class BaseTaskClass:
 
     def __init__(
-            self, compile_name: str = "prog.x", seed: int = 0,
+            self, compile_name: str = "program", seed: int = 0,
             tests_num: int = DEFAULT_TEST_NUM, fail_on_first_test: bool = True,
             array_align: str = "center", jail_exec: str = "chroot",
             jail_path: Optional[str] = None,
@@ -67,15 +67,6 @@ class BaseTaskClass:
         if len(lines) == 0:
             return "Ошибка: пустой файл."
 
-        if lines[0].find(".globl solution") == -1:
-            return "Ошибка: для метки solution не определена видимость за границами файла."
-
-        if self.solution.find("solution:") == -1:
-            return "Ошибка: Метка solution не найдена."
-
-        if lines[-1].find("ret") == -1:
-            return "Ошибка: Инструкция ret не найдена."
-
         return None  # check is passed
 
     @staticmethod
@@ -88,23 +79,44 @@ class BaseTaskClass:
         if output is not None:
             compile_args += f" -o {output}"
 
-        compile_command = f"{compiler} -c {compile_args} {file}"
-        p = subprocess.run(
-            shlex.split(compile_command),
-            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-            timeout=self.compile_timeout, check=False,
-        )
+        # Формируем команду компиляции
+        if os.name == 'nt':  # Windows
+            compile_command = f"{compiler} -c {compile_args} {file}"
+        else:  # Linux/Mac
+            compile_command = shlex.split(f"{compiler} -c {compile_args} {file}")
 
+        try:
+            p = subprocess.run(
+                compile_command,
+                stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                timeout=self.compile_timeout, check=False,
+                shell=(os.name == 'nt')
+            )
+        except subprocess.TimeoutExpired:
+            return "Timeout при компиляции"
+
+        # Пробуем разные кодировки для декодирования вывода
         if p.returncode != 0:
-            return p.stdout.decode()
-        return None
+            # Пробуем декодировать в разных кодировках
+            for encoding in ['utf-8', 'cp866', 'cp1251', 'latin-1']:
+                try:
+                    output = p.stdout.decode(encoding)
+                    return output
+                except UnicodeDecodeError:
+                    continue
+            # Если ничего не помогло
+            return p.stdout.decode('latin-1', errors='replace')
 
     def _compile_static_internal(
-            self, compiler: str = "riscv64-unknown-linux-gnu-gcc",
+            self,
+            compiler: str = "gcc",  # Default to gcc
             compile_args: str = "-static"
     ) -> Optional[str]:
         """
         General method to compile static object files
+        Args:
+            compiler: path to compiler executable (default: gcc)
+            compile_args: compilation flags (default: -static)
         Return value is the same as in `check_sol_prereq` method
         """
         self.static_check_files = {self.__class__.__name__ + "_" + x: y for x, y in self.static_check_files.items()}
@@ -125,14 +137,14 @@ class BaseTaskClass:
         return self._compile_static_internal()
 
     def _compile_internal(
-            self, solution_name: str = "sol.s",
-            compiler: str = "riscv64-unknown-linux-gnu-gcc",
-            compile_args: str = "-static",
+            self,
+            solution_name: str = "solution.c",
+            compiler: str = "gcc",
+            compile_args: str = "",
             keep_static_obj_files: bool = True
     ) -> Optional[str]:
         """
-        General method to compile work
-        Return value is the same as in `check_sol_prereq` method
+        General method to compile C work
         """
         # Dump files into filesystem
         self._dump_files(self.check_files)
@@ -141,9 +153,8 @@ class BaseTaskClass:
             f.write(self.solution)
             f.write("\n")
 
-        # Compile checker code
+        # Compile checker code (если есть)
         obj_files = []
-        studwork_obj = os.path.join(self.jail_path, 'studwork.o')
 
         for src_file in self.check_files.keys():
             err = self._compile_file(src_file, compiler, compile_args)
@@ -152,38 +163,36 @@ class BaseTaskClass:
 
             obj_files.append(src_file[:src_file.find('.') + 1] + "o")
 
-        # Compile studwork
-        err = self._compile_file(solution_name, compiler, compile_args, studwork_obj)
-        if err is not None:
-            return f"Ошибка при компиляции решения:\n{err}"
+        # Компилируем решение студента сразу в исполняемый файл
+        # Для простых C программ не нужен отдельный объектный файл
+        output_file = os.path.join(self.jail_path, self.prog_name)
+
+        # Формируем команду компиляции
+        if obj_files:
+            # Если есть дополнительные файлы, компилируем с ними
+            compile_command = f"{compiler} {solution_name} {' '.join(obj_files)} {compile_args} -o {output_file}"
+        else:
+            # Простая компиляция одного файла
+            compile_command = f"{compiler} {solution_name} {compile_args} -o {output_file}"
 
         p = subprocess.run(
-            shlex.split(f"nm -a {studwork_obj}"),
-            stdout=subprocess.PIPE, check=False,
-            timeout=self.compile_timeout
-        )
-        symbols = [x.split() for x in p.stdout.decode().splitlines()]
-
-        forbidden_symbols = [x[-1] for x in symbols if x[-2] == "U" and x[-1] not in self.allowed_symbols]
-        if len(forbidden_symbols) > 1:
-            return f"В решении использованы запрещенные символы: " + ", ".join(forbidden_symbols)
-
-        # Из-за этих двух строчек происходит ошибка компиляции бинарника для лабы 2
-        if keep_static_obj_files:
-            static_obj_files = {self.__class__.__name__ + "_" + x[:x.find('.')] + '.o': y for x, y in
-                                self.static_check_files.items()}
-            obj_files += static_obj_files
-
-        compile_command = f"{compiler} {' '.join(obj_files)} {studwork_obj} {compile_args} -o {os.path.join(self.jail_path, self.prog_name)}"
-        p = subprocess.run(
-            shlex.split(compile_command),
+            shlex.split(compile_command) if os.name != 'nt' else compile_command,
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+            shell=(os.name == 'nt')
         )
 
         if p.returncode != 0:
-            return f"Ошибка при линковке решения:\n{p.stdout.decode()}"
+            # Пробуем декодировать вывод в разных кодировках
+            output = p.stdout
+            for encoding in ['utf-8', 'cp866', 'cp1251', 'latin-1']:
+                try:
+                    error_msg = output.decode(encoding)
+                    return f"Ошибка при компиляции решения:\n{error_msg}"
+                except UnicodeDecodeError:
+                    continue
+            return f"Ошибка при компиляции решения:\n{output.decode('latin-1', errors='replace')}"
 
-        return None  # compile is success
+        return None
 
     def compile(self) -> Optional[str]:
         """
@@ -199,16 +208,26 @@ class BaseTaskClass:
 
     def _run_solution_internal(
             self, test: TestItem,
-            emulator: str = "qemu-riscv64", emu_args: str = "", prog_args: str = "",
+            prog_args: str = "",
     ) -> Optional[tuple[str, str]]:
         """
-        check_func: takes two arguments -- input and obtained output -- and
-        returns None if the test passes, otherwise returns expected output
+        Run solution natively (compiled with gcc)
         """
-        if self.jail_path != "":
-            emulator = "/" + emulator
-        run_command = f"{self.jail_exec} {self.jail_path} " \
-                      f"{emulator} {emu_args} {self.prog_name} {prog_args}"
+        # Формируем путь к исполняемому файлу
+        if self.jail_path and self.jail_path.strip():
+            # Если есть jail_path, используем его
+            prog_path = os.path.join(self.jail_path, self.prog_name)
+            run_command = f"{self.jail_exec} {self.jail_path} {prog_path} {prog_args}"
+        else:
+            # Если jail_path пустой, запускаем из текущей директории
+            prog_path = f"./{self.prog_name}"  # Добавляем ./ для Linux
+            run_command = f"{prog_path} {prog_args}"
+
+        print(f"DEBUG run: run_command = {run_command}")
+        print(f"DEBUG run: prog_path = {prog_path}")
+        print(f"DEBUG run: current dir = {os.getcwd()}")
+        print(f"DEBUG run: files in dir = {os.listdir('.')}")
+
         try:
             p = subprocess.run(
                 shlex.split(run_command),
@@ -220,10 +239,21 @@ class BaseTaskClass:
         except subprocess.TimeoutExpired as te:
             return (f"Выполнение программы превысило ограничение в {te.timeout} секунд",
                     f"Программа выполняется менее {te.timeout} секунд")
+        except FileNotFoundError as e:
+            return (f"Не найден исполняемый файл: {prog_path}. Ошибка: {e}",
+                    "Программа должна быть скомпилирована")
+        except Exception as e:
+            return (f"Ошибка при запуске: {e}",
+                    "Программа должна быть скомпилирована")
+
         output = p.stderr.decode().strip() + p.stdout.decode().strip()
+        print(f"DEBUG run: output = '{output}'")
+        print(f"DEBUG run: returncode = {p.returncode}")
+
         if p.returncode != 0:
             return (f"Программа завершилась с кодом {p.returncode}. Вывод:\n{output}",
-                    "Программа завершилась с кодом 0 ")
+                    "Программа завершилась с кодом 0")
+
         passed = test.compare_func(output, test.expected)
         if passed:
             return None

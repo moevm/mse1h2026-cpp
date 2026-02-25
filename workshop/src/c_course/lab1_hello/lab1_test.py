@@ -1,3 +1,6 @@
+import os
+from typing import Optional
+
 from ..base_module import BaseTaskClass
 from ..base_module import TestItem
 import random
@@ -7,9 +10,33 @@ class Lab1HelloTest(BaseTaskClass):
     """Задание 1: Hello, World!"""
 
     def __init__(self, seed: int = 42, mode: str = "init", name: str = "World", **kwargs):
-        super().__init__(seed, mode, **kwargs)
+        # Явно указываем все параметры для родительского класса
+        super().__init__(
+            compile_name="program",  # Явно задаем имя исполняемого файла
+            seed=seed,               # Передаем seed
+            **kwargs                 # Остальные параметры
+        )
         self.name = name
+        self.mode = mode
 
+    def compile(self) -> Optional[str]:
+        """Компиляция C программы"""
+        print(f"DEBUG: Начинаем компиляцию, prog_name = {self.prog_name}")
+        print(f"DEBUG: jail_path = {self.jail_path}")
+
+        result = self._compile_internal(
+            solution_name="solution.c",
+            compiler="gcc",
+            compile_args="-Wall -o program"  # Явно указываем выходной файл
+        )
+
+        # Проверим, создался ли файл
+        if os.path.exists("program"):
+            print("DEBUG: Файл program создан успешно")
+        else:
+            print("DEBUG: Файл program НЕ создан")
+
+        return result
     def generate_task(self) -> str:
         """Генерирует текст задания"""
         return f"""# Лабораторная работа №1: Hello, World!
@@ -33,29 +60,30 @@ Hello, {self.name}!
         random.seed(self.seed)
 
         self.tests = []
-
-        # Основной тест
         self.tests.append(TestItem(
-            input_data="",
-            expected_output=f"Hello, {self.name}!\n",
-            description="Проверка вывода"
+            input_str="",
+            showed_input='no input',
+            expected=f"Hello, {self.name}!",
+            compare_func=lambda x, y: x==y
         ))
 
-        # Дополнительные тесты для разных вариантов
-        for i in range(3):
-            test_name = f"Test_{i}"
-            self.tests.append(TestItem(
-                input_data="",
-                expected_output=f"Hello, {self.name}!\n",
-                description=f"Дополнительная проверка {i + 1}"
-            ))
 
-    def check(self):
+    def check(self, solution_filename: str = "solution.c") -> tuple[bool, str]:
         """Проверяет решение студента"""
-        self.load_student_solution("solution.s")
-        if not self.solution:
-            return False, "Решение не загружено"
+        try:
+            self.load_student_solution(solution_filename)
 
-        # Здесь должна быть компиляция и запуск
-        # Пока просто заглушка
-        return True, "Все тесты пройдены!"
+            # Проверка предварительных условий
+            if (msg := self.check_sol_prereq()) is not None:
+                return False, msg
+            # Компиляция
+            if (msg := self.compile()) is not None:
+                return False, msg
+
+            self._generate_tests()
+
+            # Запуск тестов
+            return self.run_tests()
+
+        except Exception as e:
+            return False, f"Непредвиденная ошибка во время проверки решения: {e}"
