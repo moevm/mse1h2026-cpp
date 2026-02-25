@@ -110,9 +110,9 @@ python3 main.py lab1_hello --mode check --seed 12 --solution "./solution.c" --na
 В данный момент, в прототипе, значения для флагов менять нельзя.
 ## Итерация №1
 ### Презентация
-    ссылка
+[ссылка](https://github.com/moevm/mse1h2026-cpp/blob/reports/docs/iteration_1/mse-cpp-iter1.pdf)
 ### Скринкасты
-    ссылка
+[ссылка](https://github.com/moevm/mse1h2026-cpp/blob/reports/docs/iteration_1/screencast-iteration1.mp4)
 ### Запланированные задачи
     - Перенести необходимую функциональность из репозитория RISC-V и создать документацию
     - Придумать задания (около 40) и ЛР (3 или более) для модуля по C++
