@@ -3,6 +3,22 @@
 ## Установка и запуск
 Инструкции по установке и запуску проекта.
 
+из папки workshop:
+```bash
+docker build -t lab-checker .    
+``` 
+```bash
+docker run -it --rm lab-checker bash 
+```
+получение задания
+```bash
+python3 main.py lab1_hello --mode init --seed 12 --name "student"
+```
+проверка решения
+```bash
+python3 main.py lab1_hello --mode check --seed 12 --solution "./solution.c" --name "student"
+```
+пока файлик с кодом решения лежит захардкоженный внутри - но его можно менять до запуска или в процессе в терминале контейнера
 ## Проверка работоспособности
 Инструкции по проверке работоспособности проекта (основной функциональности и результатов).
 
