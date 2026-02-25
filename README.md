@@ -3,13 +3,17 @@
 ## Установка и запуск
 Инструкции по установке и запуску проекта.
 
-из папки workshop:
+### Сборка
 ```bash
-docker build -t lab-checker .    
+docker build -t mse-cpp .    
 ``` 
 ```bash
-docker run -it --rm lab-checker bash 
+docker run -it mse-cpp 
 ```
+
+### Запуск системы
+Из дирертории ./workshop
+
 получение задания
 ```bash
 python3 main.py lab1_hello --mode init --seed 12 --name "student"
@@ -18,7 +22,8 @@ python3 main.py lab1_hello --mode init --seed 12 --name "student"
 ```bash
 python3 main.py lab1_hello --mode check --seed 12 --solution "./solution.c" --name "student"
 ```
-пока файлик с кодом решения лежит захардкоженный внутри - но его можно менять до запуска или в процессе в терминале контейнера
+В данный момент, в прототипе, значения для флагов менять нельзя.
+
 ## Проверка работоспособности
 Инструкции по проверке работоспособности проекта (основной функциональности и результатов).
 
