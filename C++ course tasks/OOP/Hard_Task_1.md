@@ -20,6 +20,9 @@
 **5) Метод `findBooksByAuthor(const std::string& author)`**
 - Возвращает `std::vector<Book>`, содержащий все книги этого автора.
 
-**6) Метод `printLibrary()`**
+**6) Метод `findBooksByTitle(const std::string& title)`**
+- Возвращает `std::vector<Book>`, содержащий все книги с указанным названием.
+
+**7) Метод `printLibrary()`**
 - Выводит список всех книг в формате: `Title (Author, Year) - [hash]`.
 

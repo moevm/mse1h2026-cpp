@@ -8,7 +8,6 @@
 **1) Конструктор по умолчанию `Calculator()`**
 - **Формат:** `Calculator calc;`
 - Создает объект калькулятора
-- Ничего не возвращает
 
 **2) Метод `divide(double a, double b) const`**
 - **Формат:** `double result = calc.divide(10, 2);`
