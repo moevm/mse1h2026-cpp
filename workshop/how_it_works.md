@@ -75,9 +75,10 @@ parser.set_defaults(func=create_task_lab<N>)
 ### 4. Создание __init__.py
 Сделать файл __init__.py, в котором импортировать класс с заданием (Lab10Test) и объект парсера (Lab10CLIParser), чтобы они были сразу доступны на уровне модуля:
 
-python
+```python
 from .lab10_test import Lab10Test
 from .lab10_cli import lab10_parser
+```
 ### 5. Проверка
 После этого работа должна автоматически появиться в библиотеке и main.py. Для примера можно смотреть на base/lab1_hello.
 
