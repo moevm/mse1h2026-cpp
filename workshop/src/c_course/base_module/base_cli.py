@@ -17,8 +17,11 @@ def add_common_cli_args(parser: argparse.ArgumentParser):
     parser.add_argument("-a", "--all-tests", action='store_true')
     parser.add_argument("--mode", type=str, choices=("init", "check", "dry-run"), default="init")
     parser.add_argument("--array-align", type=str, choices=("center", "left", "right"), default="center")
-    parser.add_argument("--jail-exec", type=str, default="chroot")
-    parser.add_argument("--jail-path", type=str, default=None)
+    parser.add_argument("--output-type", type=str, default="html")
+    parser.add_argument('--jail-exec', type=str, default='chroot',
+                        help='Исполняемый файл для jail (по умолчанию chroot)')
+    parser.add_argument('--jail-path', type=str,
+                        help='Путь к jail директории')
 
 
 def get_common_cli_args(args) -> dict[str, Any]:
@@ -29,4 +32,6 @@ def get_common_cli_args(args) -> dict[str, Any]:
         "array_align": args.array_align,
         "jail_exec": args.jail_exec,
         "jail_path": args.jail_path,
+        "solution": args.solution,
+        "output_type": args.mode,
     }

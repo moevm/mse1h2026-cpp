@@ -8,10 +8,6 @@ def add_cli_args_lab1(parser):
     # Сначала добавляем общие аргументы
     add_common_cli_args(parser)
 
-    # Потом специфичные для задания
-    parser.add_argument('--name', type=str, default='World',
-                        help='Имя для приветствия')
-
     # Устанавливаем функцию создания задания
     parser.set_defaults(func=create_task_lab1)
 
@@ -21,7 +17,6 @@ def create_task_lab1(args):
     common_args = get_common_cli_args(args)
     return Lab1HelloTest(
         **common_args,
-        name=args.name
     )
 
 
