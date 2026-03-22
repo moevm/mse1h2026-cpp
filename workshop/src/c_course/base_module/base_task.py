@@ -4,6 +4,7 @@ import os
 import subprocess
 import shlex
 from dataclasses import dataclass
+from pathlib import Path
 
 COMPILE_TIMEOUT = 60
 RUN_TIMEOUT = 5
@@ -27,7 +28,7 @@ class BaseTaskClass:
             self, compile_name: str = "program", seed: int = 0,
             tests_num: int = DEFAULT_TEST_NUM, fail_on_first_test: bool = True,
             array_align: str = "center", jail_exec: str = "chroot",
-            jail_path: Optional[str] = None,
+            jail_path: Optional[str] = None, output_type: Optional[str] = 'bash', **kwargs
     ):
         self.solution = ""
         self.check_files = {}
@@ -43,8 +44,10 @@ class BaseTaskClass:
         self.allowed_symbols = []
         self.jail_exec = jail_exec
         self.jail_path = jail_path if jail_path is not None else os.environ.get("JAIL_PATH", "")
+        self.output_type = output_type
 
     def load_student_solution(self, solfile: Optional[str] = None, solcode: Optional[str] = None):
+        solfile = "/work/" + solfile
         if solcode is None and solfile is None:
             raise ValueError("Neither solcode nor solfile is provided")
         if solcode is not None and solfile is not None:
@@ -67,7 +70,7 @@ class BaseTaskClass:
         if len(lines) == 0:
             return "Ошибка: пустой файл."
 
-        return None  # check is passed
+        return None
 
     @staticmethod
     def _dump_files(files):
@@ -77,35 +80,23 @@ class BaseTaskClass:
 
     def _compile_file(self, file: str, compiler: str, compile_args: str, output: str = None):
         if output is not None:
-            compile_args += f" -o {output}"
+            compile_args += f" -o {output} -fno-common -std=c11 -g -Wall -Werror -fsanitize=address"
 
-        # Формируем команду компиляции
-        if os.name == 'nt':  # Windows
-            compile_command = f"{compiler} -c {compile_args} {file}"
-        else:  # Linux/Mac
-            compile_command = shlex.split(f"{compiler} -c {compile_args} {file}")
+        compile_command = shlex.split(f"{compiler} -c {compile_args} {file}")
 
         try:
             p = subprocess.run(
                 compile_command,
                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                timeout=self.compile_timeout, check=False,
-                shell=(os.name == 'nt')
+                timeout=self.compile_timeout, check=False
             )
         except subprocess.TimeoutExpired:
             return "Timeout при компиляции"
 
-        # Пробуем разные кодировки для декодирования вывода
-        if p.returncode != 0:
-            # Пробуем декодировать в разных кодировках
-            for encoding in ['utf-8', 'cp866', 'cp1251', 'latin-1']:
-                try:
-                    output = p.stdout.decode(encoding)
-                    return output
-                except UnicodeDecodeError:
-                    continue
-            # Если ничего не помогло
-            return p.stdout.decode('latin-1', errors='replace')
+        try:
+            return p.stdout.decode('utf-8')
+        except UnicodeDecodeError:
+            return f"Ошибка декодирования вывода. Ожидалась UTF-8, получены бинарные данные: {p.stdout!r}"
 
     def _compile_static_internal(
             self,
@@ -140,8 +131,7 @@ class BaseTaskClass:
             self,
             solution_name: str = "solution.c",
             compiler: str = "gcc",
-            compile_args: str = "",
-            keep_static_obj_files: bool = True
+            compile_args: str = ""
     ) -> Optional[str]:
         """
         General method to compile C work
@@ -149,11 +139,14 @@ class BaseTaskClass:
         # Dump files into filesystem
         self._dump_files(self.check_files)
 
-        with open(solution_name, "w", encoding="utf-8") as f:
-            f.write(self.solution)
-            f.write("\n")
+        if not os.path.exists(solution_name) or solution_name == "solution.c":
+            with open(solution_name, "w", encoding="utf-8") as f:
+                f.write(self.solution)
+                f.write("\n")
+                print(f"DEBUG: Created solution file: {solution_name}")
+        else:
+            print(f"DEBUG: Using existing solution file: {solution_name}")
 
-        # Compile checker code (если есть)
         obj_files = []
 
         for src_file in self.check_files.keys():
@@ -163,42 +156,64 @@ class BaseTaskClass:
 
             obj_files.append(src_file[:src_file.find('.') + 1] + "o")
 
-        # Компилируем решение студента сразу в исполняемый файл
-        # Для простых C программ не нужен отдельный объектный файл
         output_file = os.path.join(self.jail_path, self.prog_name)
-
-        # Формируем команду компиляции
         if obj_files:
-            # Если есть дополнительные файлы, компилируем с ними
-            compile_command = f"{compiler} {solution_name} {' '.join(obj_files)} {compile_args} -o {output_file}"
+            compile_args_list = [compiler, solution_name] + obj_files + shlex.split(compile_args) + ["-o", output_file]
         else:
-            # Простая компиляция одного файла
-            compile_command = f"{compiler} {solution_name} {compile_args} -o {output_file}"
+            compile_args_list = [compiler, solution_name] + shlex.split(compile_args) + ["-o", output_file]
 
-        p = subprocess.run(
-            shlex.split(compile_command) if os.name != 'nt' else compile_command,
-            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
-            shell=(os.name == 'nt')
-        )
+        print(f"DEBUG compile command: {' '.join(compile_args_list)}")
+
+        try:
+            p = subprocess.run(
+                compile_args_list,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                check=False,
+                timeout=self.compile_timeout
+            )
+        except subprocess.TimeoutExpired:
+            return "Timeout при компиляции"
 
         if p.returncode != 0:
-            # Пробуем декодировать вывод в разных кодировках
             output = p.stdout
-            for encoding in ['utf-8', 'cp866', 'cp1251', 'latin-1']:
-                try:
-                    error_msg = output.decode(encoding)
-                    return f"Ошибка при компиляции решения:\n{error_msg}"
-                except UnicodeDecodeError:
-                    continue
-            return f"Ошибка при компиляции решения:\n{output.decode('latin-1', errors='replace')}"
-
+            try:
+                error_msg = output.decode('utf-8')
+                return f"Ошибка при компиляции решения:\n{error_msg}"
+            except UnicodeDecodeError:
+                return f"Ошибка при компиляции решения:\n{output.decode('latin-1', errors='replace')}"
         return None
 
     def compile(self) -> Optional[str]:
-        """
-        Derived classes must override this method
-        """
-        return self._compile_internal()
+        """Компиляция C программы"""
+        print("=== НАЧАЛО КОМПИЛЯЦИИ ===")
+        print(f"DEBUG: Current directory: {os.getcwd()}")
+        print(f"DEBUG: Files in current dir: {os.listdir('.')}")
+        print(f"DEBUG: Solution path: /work/solution.c")
+        print(f"DEBUG: Solution exists: {os.path.exists('/work/solution.c')}")
+
+        # Проверяем, можем ли мы прочитать файл
+        if os.path.exists('/work/solution.c'):
+            with open('/work/solution.c', 'r') as f:
+                content = f.read()
+                print(f"DEBUG: File content preview: {content[:50]}...")
+
+        result = self._compile_internal(
+            solution_name="/work/solution.c",  # Оставляем абсолютный путь
+            compiler="gcc",
+            compile_args="-Wall"
+        )
+
+        # Проверим, создался ли файл
+        if os.path.exists("program"):
+            print("DEBUG: Файл program создан успешно")
+            print(f"DEBUG: program path: {os.path.abspath('program')}")
+        else:
+            print("DEBUG: Файл program НЕ создан")
+            print(f"DEBUG: Current directory contents after compilation: {os.listdir('.')}")
+
+        print("=== КОНЕЦ КОМПИЛЯЦИИ ===")
+        return result
 
     def generate_task(self) -> str:
         return "TODO: Base class"
@@ -220,7 +235,7 @@ class BaseTaskClass:
             run_command = f"{self.jail_exec} {self.jail_path} {prog_path} {prog_args}"
         else:
             # Если jail_path пустой, запускаем из текущей директории
-            prog_path = f"./{self.prog_name}"  # Добавляем ./ для Linux
+            prog_path = Path.cwd() / self.prog_name
             run_command = f"{prog_path} {prog_args}"
 
         print(f"DEBUG run: run_command = {run_command}")

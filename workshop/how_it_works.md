@@ -27,11 +27,12 @@
 Библиотека и `main.py` автоматически подтягивают новые работы, нужно только их правильно расположить и правильно назвать.
 
 ### Пощелкать
-чтобы посмотреть на то как работает код в действии - установить виртуальное окружение и введите из директории workshop следующие команды
+чтобы посмотреть на то как работает код в действии - вызвать из папки с Dockerfile
 ```bash
-python main.py lab1_hello --help
-python main.py lab1_hello --mode init --seed 12 --name Петя
-python main.py lab1_hello --mode check --seed 12 --solution "./solution.s"
+docker run --rm lab-checker lab1_hello --help
+docker run --rm lab-checker lab1_hello --mode init --seed 12
+docker run --rm -v "<полный путь к папке с решением>/:/work" lab-checker lab1_hello --mode check --seed 12 --solution "<название файла с решением>"
+
 ```
 
 ## Создание новой лабораторной работы
@@ -50,11 +51,7 @@ python main.py lab1_hello --mode check --seed 12 --solution "./solution.s"
 
 - `_generate_tests`: добавить генерацию тестов. Тесты нужно создавать в виде класса `TestItem` и добавлять их в список тестов `self.tests`
 
-- `check_sol_prereq`: можно переопределить проверку текста предоставленного задания (наличие `ret`, метки `solution`, ...). Можно оставить базовое
-
-- `compile`: если необходимо поменять опции компиляции, то нужно переопределить этот метод и подставить в вызов `_compile_internal` нужные аргументы. Без острой необходимости переопределять метод `_compile_internal` не рекомендуется
-
-- `run_solution`: аналогично `compile`, только для запуска скомпилированного решения
+- `check`: проверки
 
 ### 3. Создание CLI-файла
 Сделать файл с аргументами CLI: `lab10_cli.py`. Определить две функции:

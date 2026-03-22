@@ -43,6 +43,7 @@ if __name__ == "__main__":
         case "init":
             init_task(task)
         case "check":
+            task.load_student_solution(args.solution)
             check_task(task, args.solution, sys.argv[1])
         case "dry-run":
             dry_run_task(task)
