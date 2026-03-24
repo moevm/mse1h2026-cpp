@@ -8,7 +8,7 @@ def init_task(task: c_course.BaseTaskClass):
     print(task.init_task())
 
 
-def check_task(task: c_course.BaseTaskClass, solfile: str, name: str):
+def check_task(task: c_course.BaseTaskClass):
     passed, msg = task.check()
     print("Passed:", passed)
     print(msg)
