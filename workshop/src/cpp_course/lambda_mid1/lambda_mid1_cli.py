@@ -1,5 +1,5 @@
 from ...base_module.base_cli import add_common_cli_args, get_common_cli_args, CLIParser
-from .lambda_mid_1_test import LambdaMid1Test
+from .lambda_mid1_test import LambdaMid1Test
 
 
 def add_cli_args_lambda_mid_1(parser):

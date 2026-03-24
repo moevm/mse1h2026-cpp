@@ -1,5 +1,5 @@
 from ...base_module.base_cli import add_common_cli_args, get_common_cli_args, CLIParser
-from .oop_hard_1_test import OopHard1Test
+from .oop_hard1_test import OopHard1Test
 
 
 def add_cli_args_oop_hard_1(parser):

@@ -5,11 +5,11 @@ from .concepts_hard2 import ConceptsHard2Test, concepts_hard2_parser
 from .exceptions_easy1 import ExceptionsEasy1Test, exceptions_easy1_parser
 from .lambda_easy1 import LambdaEasy1Test, lambda_easy1_parser
 
-from .lambda_mid_1 import LambdaMid1Test, lambda_mid_1_parser
-from .lambda_mid_2 import LambdaMid2Test, lambda_mid_2_parser
-from .oop_easy_1 import OopEasy1Test, oop_easy_1_parser
-from .oop_hard_1 import OopHard1Test, oop_hard_1_parser
-from .oop_hard_2 import OopHard2Test, oop_hard_2_parser
+from .lambda_mid1 import LambdaMid1Test, lambda_mid_1_parser
+from .lambda_mid2 import LambdaMid2Test, lambda_mid_2_parser
+from .oop_easy1 import OopEasy1Test, oop_easy_1_parser
+from .oop_hard1 import OopHard1Test, oop_hard_1_parser
+from .oop_hard2 import OopHard2Test, oop_hard_2_parser
 
 # Собираем все парсеры в список для удобства
 PARSERS = [
