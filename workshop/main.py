@@ -1,7 +1,7 @@
 import argparse
 import sys
 import inspect
-from src import c_course
+from src import c_course, cpp_course
 import os
 
 
@@ -37,12 +37,18 @@ if __name__ == "__main__":
         task_parser = subparsers.add_parser(cli_parser.name)
         cli_parser.add_cli_args(task_parser)
 
+    # Регистратор для cpp задачек
+    for cli_parser in cpp_course.PARSERS:
+        task_parser = subparsers.add_parser(cli_parser.name)
+        cli_parser.add_cli_args(task_parser)
+
     args = parser.parse_args()
     task = args.func(args)
     match args.mode:
         case "init":
             init_task(task)
         case "check":
+            task.load_student_solution(args.solution)
             check_task(task, args.solution, sys.argv[1])
         case "dry-run":
             dry_run_task(task)
