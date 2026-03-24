@@ -1,6 +1,7 @@
 import argparse
 import sys
 import inspect
+import importlib
 from src import c_course
 import os
 
@@ -33,7 +34,18 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(required=True)
 
-    for _, cli_parser in inspect.getmembers(c_course, lambda obj: isinstance(obj, c_course.CLIParser)):
+    course_modules = [
+        c_course,
+        importlib.import_module("src.c++_course"),
+    ]
+    cli_parsers = []
+    for course_module in course_modules:
+        cli_parsers.extend(
+            cli_parser
+            for _, cli_parser in inspect.getmembers(course_module, lambda obj: isinstance(obj, c_course.CLIParser))
+        )
+
+    for cli_parser in cli_parsers:
         task_parser = subparsers.add_parser(cli_parser.name)
         cli_parser.add_cli_args(task_parser)
 
