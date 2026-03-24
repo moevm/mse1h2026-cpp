@@ -1,5 +1,5 @@
-from .base_module.base_task import BaseTaskClass
-from .base_module.base_cli import CLIParser, add_common_cli_args, get_common_cli_args
+from src.base_module.base_task import BaseTaskClass
+from src.base_module.base_cli import CLIParser, add_common_cli_args, get_common_cli_args
 
 # Ручной импорт лабораторных работ
 from .lab1_hello import Lab1HelloTest, lab1_parser
