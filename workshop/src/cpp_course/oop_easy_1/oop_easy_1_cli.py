@@ -13,6 +13,6 @@ def create_task_oop_easy_1(args):
 
 
 oop_easy_1_parser = CLIParser(
-    name='oop_easy_task_1',
+    name='oop_easy_1',
     add_cli_args=add_cli_args_oop_easy_1
 )

@@ -13,6 +13,6 @@ def create_task_oop_hard_2(args):
 
 
 oop_hard_2_parser = CLIParser(
-    name='oop_hard_task_2',
+    name='oop_hard_2',
     add_cli_args=add_cli_args_oop_hard_2
 )

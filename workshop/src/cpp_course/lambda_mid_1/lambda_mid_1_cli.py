@@ -13,6 +13,6 @@ def create_task_lambda_mid_1(args):
 
 
 lambda_mid_1_parser = CLIParser(
-    name='lambda_mid_difficulty_task_1',
+    name='lambda_mid_1',
     add_cli_args=add_cli_args_lambda_mid_1
 )
