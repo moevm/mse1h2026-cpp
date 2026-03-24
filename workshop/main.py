@@ -1,7 +1,7 @@
 import argparse
 import sys
 import inspect
-from src import c_course
+from src import c_course, cpp_course
 import os
 
 
@@ -33,6 +33,11 @@ if __name__ == "__main__":
     subparsers = parser.add_subparsers(required=True)
 
     for _, cli_parser in inspect.getmembers(c_course, lambda obj: isinstance(obj, c_course.CLIParser)):
+        task_parser = subparsers.add_parser(cli_parser.name)
+        cli_parser.add_cli_args(task_parser)
+
+    # Регистратор для cpp задачек
+    for cli_parser in cpp_course.PARSERS:
         task_parser = subparsers.add_parser(cli_parser.name)
         cli_parser.add_cli_args(task_parser)
 
