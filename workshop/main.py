@@ -10,7 +10,8 @@ def init_task(task: c_course.BaseTaskClass):
     print(task.init_task())
 
 
-def check_task(task: c_course.BaseTaskClass):
+def check_task(task: c_course.BaseTaskClass, solfile: str, name: str):
+    task.load_student_solution(solfile)
     passed, msg = task.check()
     print("Passed:", passed)
     print(msg)
@@ -47,6 +48,7 @@ if __name__ == "__main__":
         case "init":
             init_task(task)
         case "check":
-            check_task(task)
+            task.load_student_solution(args.solution)
+            check_task(task, args.solution, sys.argv[1])
         case "dry-run":
             dry_run_task(task)

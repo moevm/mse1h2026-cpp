@@ -1,4 +1,4 @@
-from ...base_module.base_cli import add_common_cli_args, get_common_cli_args, CLIParser
+from ...c_course.base_module.base_cli import add_common_cli_args, get_common_cli_args, CLIParser
 from .exceptions_easy1_test import ExceptionsEasy1Test
 
 def add_cli_args_exceptions_easy1(parser):

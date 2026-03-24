@@ -1,4 +1,4 @@
-from ...base_module.base_cli import add_common_cli_args, get_common_cli_args, CLIParser
+from ...c_course.base_module.base_cli import add_common_cli_args, get_common_cli_args, CLIParser
 from .concepts_hard2_test import ConceptsHard2Test
 
 def add_cli_args_concepts_hard2(parser):
