@@ -1,8 +1,7 @@
 import argparse
 import sys
 import inspect
-import importlib
-from src import c_course
+from src import c_course, cpp_course
 import os
 
 
@@ -11,7 +10,7 @@ def init_task(task: c_course.BaseTaskClass):
     print(task.init_task())
 
 
-def check_task(task: c_course.BaseTaskClass):
+def check_task(task: c_course.BaseTaskClass, solfile: str, name: str):
     passed, msg = task.check()
     print("Passed:", passed)
     print(msg)
@@ -45,6 +44,11 @@ if __name__ == "__main__":
         )
 
     for cli_parser in cli_parsers:
+        task_parser = subparsers.add_parser(cli_parser.name)
+        cli_parser.add_cli_args(task_parser)
+
+    # Регистратор для cpp задачек
+    for cli_parser in cpp_course.PARSERS:
         task_parser = subparsers.add_parser(cli_parser.name)
         cli_parser.add_cli_args(task_parser)
 
