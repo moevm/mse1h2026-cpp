@@ -1,5 +1,5 @@
 import argparse
-from ..base_module.base_cli import add_common_cli_args, get_common_cli_args, CLIParser
+from src.base_module.base_cli import add_common_cli_args, get_common_cli_args, CLIParser
 from .lab1_test import Lab1HelloTest
 
 

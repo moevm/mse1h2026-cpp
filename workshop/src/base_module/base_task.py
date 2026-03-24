@@ -28,9 +28,9 @@ class BaseTaskClass:
             self, compile_name: str = "program", seed: int = 0,
             tests_num: int = DEFAULT_TEST_NUM, fail_on_first_test: bool = True,
             array_align: str = "center", jail_exec: str = "chroot",
-            jail_path: Optional[str] = None, output_type: Optional[str] = 'bash', **kwargs
+            jail_path: Optional[str] = None, output_type: Optional[str] = 'bash', solution: Optional[str] = None,
     ):
-        self.solution = ""
+        self.solution = solution
         self.check_files = {}
         self.static_check_files = {}
         self.prog_name = compile_name
@@ -46,20 +46,6 @@ class BaseTaskClass:
         self.jail_path = jail_path if jail_path is not None else os.environ.get("JAIL_PATH", "")
         self.output_type = output_type
 
-    def load_student_solution(self, solfile: Optional[str] = None, solcode: Optional[str] = None):
-        solfile = "/work/" + solfile
-        if solcode is None and solfile is None:
-            raise ValueError("Neither solcode nor solfile is provided")
-        if solcode is not None and solfile is not None:
-            raise ValueError("Both solcode and solfile are provided")
-        if solcode is not None:
-            self.solution = solcode
-        elif solfile is not None:
-            if not os.path.exists(solfile):
-                raise ValueError("Ошибка: Файл решения не найден.")
-            with open(solfile, "r", encoding="utf-8") as f:
-                self.solution = f.read().strip()
-
     def check_sol_prereq(self) -> Optional[str]:
         """
         This is counter-intuitive, but more straightforward than other ways:
@@ -71,12 +57,6 @@ class BaseTaskClass:
             return "Ошибка: пустой файл."
 
         return None
-
-    @staticmethod
-    def _dump_files(files):
-        for name, content in files.items():
-            with open(name, "w", encoding="utf-8") as f:
-                f.write(content)
 
     def _compile_file(self, file: str, compiler: str, compile_args: str, output: str = None):
         if output is not None:
@@ -98,55 +78,15 @@ class BaseTaskClass:
         except UnicodeDecodeError:
             return f"Ошибка декодирования вывода. Ожидалась UTF-8, получены бинарные данные: {p.stdout!r}"
 
-    def _compile_static_internal(
-            self,
-            compiler: str = "gcc",  # Default to gcc
-            compile_args: str = "-static"
-    ) -> Optional[str]:
-        """
-        General method to compile static object files
-        Args:
-            compiler: path to compiler executable (default: gcc)
-            compile_args: compilation flags (default: -static)
-        Return value is the same as in `check_sol_prereq` method
-        """
-        self.static_check_files = {self.__class__.__name__ + "_" + x: y for x, y in self.static_check_files.items()}
-        self._dump_files(self.static_check_files)
-
-        for src_file in self.static_check_files.keys():
-            err = self._compile_file(src_file, compiler, compile_args)
-            if err is not None:
-                return f"Ошибка при компиляции кода системы проверки, файл {src_file}:\n{err}"
-            os.remove(src_file)
-
-        return None
-
-    def compile_static(self) -> Optional[str]:
-        """
-        Derived classes must override this method
-        """
-        return self._compile_static_internal()
-
     def _compile_internal(
             self,
-            solution_name: str = "solution.c",
-            compiler: str = "gcc",
-            compile_args: str = ""
+            compiler,
+            compile_args
     ) -> Optional[str]:
         """
         General method to compile C work
         """
-        # Dump files into filesystem
-        self._dump_files(self.check_files)
-
-        if not os.path.exists(solution_name) or solution_name == "solution.c":
-            with open(solution_name, "w", encoding="utf-8") as f:
-                f.write(self.solution)
-                f.write("\n")
-                print(f"DEBUG: Created solution file: {solution_name}")
-        else:
-            print(f"DEBUG: Using existing solution file: {solution_name}")
-
+        solution_name = "/work/" + self.solution
         obj_files = []
 
         for src_file in self.check_files.keys():
@@ -161,8 +101,6 @@ class BaseTaskClass:
             compile_args_list = [compiler, solution_name] + obj_files + shlex.split(compile_args) + ["-o", output_file]
         else:
             compile_args_list = [compiler, solution_name] + shlex.split(compile_args) + ["-o", output_file]
-
-        print(f"DEBUG compile command: {' '.join(compile_args_list)}")
 
         try:
             p = subprocess.run(
@@ -185,34 +123,19 @@ class BaseTaskClass:
         return None
 
     def compile(self) -> Optional[str]:
-        """Компиляция C программы"""
-        print("=== НАЧАЛО КОМПИЛЯЦИИ ===")
-        print(f"DEBUG: Current directory: {os.getcwd()}")
-        print(f"DEBUG: Files in current dir: {os.listdir('.')}")
-        print(f"DEBUG: Solution path: /work/solution.c")
-        print(f"DEBUG: Solution exists: {os.path.exists('/work/solution.c')}")
-
-        # Проверяем, можем ли мы прочитать файл
-        if os.path.exists('/work/solution.c'):
-            with open('/work/solution.c', 'r') as f:
-                content = f.read()
-                print(f"DEBUG: File content preview: {content[:50]}...")
-
-        result = self._compile_internal(
-            solution_name="/work/solution.c",  # Оставляем абсолютный путь
-            compiler="gcc",
-            compile_args="-Wall"
-        )
-
-        # Проверим, создался ли файл
-        if os.path.exists("program"):
-            print("DEBUG: Файл program создан успешно")
-            print(f"DEBUG: program path: {os.path.abspath('program')}")
+        """Компиляция программы"""
+        file_extention = self.solution.split('.')[-1]
+        if file_extention == 'cpp':
+            result = self._compile_internal(
+                compiler="g++",
+                compile_args="-std=c++20 -Wall -Werror",
+            )
         else:
-            print("DEBUG: Файл program НЕ создан")
-            print(f"DEBUG: Current directory contents after compilation: {os.listdir('.')}")
+            result = self._compile_internal(
+                compiler="gcc",
+                compile_args="-Wall"
+            )
 
-        print("=== КОНЕЦ КОМПИЛЯЦИИ ===")
         return result
 
     def generate_task(self) -> str:
@@ -238,10 +161,6 @@ class BaseTaskClass:
             prog_path = Path.cwd() / self.prog_name
             run_command = f"{prog_path} {prog_args}"
 
-        print(f"DEBUG run: run_command = {run_command}")
-        print(f"DEBUG run: prog_path = {prog_path}")
-        print(f"DEBUG run: current dir = {os.getcwd()}")
-        print(f"DEBUG run: files in dir = {os.listdir('.')}")
 
         try:
             p = subprocess.run(
@@ -262,8 +181,6 @@ class BaseTaskClass:
                     "Программа должна быть скомпилирована")
 
         output = p.stderr.decode().strip() + p.stdout.decode().strip()
-        print(f"DEBUG run: output = '{output}'")
-        print(f"DEBUG run: returncode = {p.returncode}")
 
         if p.returncode != 0:
             return (f"Программа завершилась с кодом {p.returncode}. Вывод:\n{output}",
@@ -285,7 +202,6 @@ class BaseTaskClass:
     ) -> str:
         return FAILED_TEST_MSG.format(
             inp=showed_input,
-            # obt=str(result[0].encode())[2:-1], # dirty hack to make non-ascii characters visible
             obt=obtained,
             exp=expected
         )
@@ -304,29 +220,23 @@ class BaseTaskClass:
             return True, "OK"
         return False, "\n".join(msgs)
 
-    # ======== Pipeline methods ========
     def init_task(self) -> str:
         return self.generate_task()
 
     def check(self) -> tuple[bool, str]:
-        """
-        Run checks on loaded solution. ***Important***:
-        `load_student_solution` must be called before this method
-        """
-
-        def __ret_err(msg: str, prefix: str = "") -> tuple[bool, str]:
-            return False, f"{prefix}{msg}"
-
+        """Проверяет решение студента"""
         try:
             if (msg := self.check_sol_prereq()) is not None:
-                return __ret_err(msg)
+                return False, msg
             if (msg := self.compile()) is not None:
-                return __ret_err(msg)
-            self.generate_task()
+                return False, msg
+
             self._generate_tests()
+
             return self.run_tests()
-        except Exception as e:  # pylint: disable=W0718
-            return __ret_err(str(e), "Непредвиденная ошибка во время проверки решения: ")
+
+        except Exception as e:
+            return False, f"Непредвиденная ошибка во время проверки решения: {e}"
 
     def make_array_failed_test_msg(
             self, caption: list[str], arrs: list[list], max_col_len: int,

@@ -1,7 +1,7 @@
 import argparse
 from typing import Any, Callable
 from dataclasses import dataclass
-from src.c_course.base_module.base_task import BaseTaskClass, DEFAULT_TEST_NUM
+from src.base_module.base_task import BaseTaskClass, DEFAULT_TEST_NUM
 
 
 @dataclass
@@ -12,7 +12,7 @@ class CLIParser:
 
 def add_common_cli_args(parser: argparse.ArgumentParser):
     parser.add_argument('-s', '--seed', type=int)
-    parser.add_argument('--solution', type=str, default="solution.s")
+    parser.add_argument('--solution', type=str, default=None)
     parser.add_argument('-n', '--n-tests', type=int, default=DEFAULT_TEST_NUM)
     parser.add_argument("-a", "--all-tests", action='store_true')
     parser.add_argument("--mode", type=str, choices=("init", "check", "dry-run"), default="init")

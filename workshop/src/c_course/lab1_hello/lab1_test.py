@@ -1,8 +1,8 @@
 import os
 from typing import Optional
 
-from ..base_module import BaseTaskClass
-from ..base_module import TestItem
+from src.base_module import BaseTaskClass
+from src.base_module import TestItem
 import random
 
 
@@ -51,17 +51,3 @@ Hello, {self.name}!
         ))
 
 
-    def check(self) -> tuple[bool, str]:
-        """Проверяет решение студента"""
-        try:
-            if (msg := self.check_sol_prereq()) is not None:
-                return False, msg
-            if (msg := self.compile()) is not None:
-                return False, msg
-
-            self._generate_tests()
-
-            return self.run_tests()
-
-        except Exception as e:
-            return False, f"Непредвиденная ошибка во время проверки решения: {e}"
