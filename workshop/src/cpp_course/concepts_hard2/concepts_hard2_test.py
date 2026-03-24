@@ -1,4 +1,4 @@
-from ...c_course.base_module import BaseTaskClass, TestItem
+from ...base_module import BaseTaskClass, TestItem
 import random
 from typing import Optional
 
@@ -11,12 +11,6 @@ class ConceptsHard2Test(BaseTaskClass):
             **kwargs
         )
 
-    def compile(self) -> Optional[str]:
-        return self._compile_internal(
-            solution_name="solution.cpp",
-            compiler="g++",
-            compile_args="-std=c++20 -Wall -Werror",
-        )
 
     def generate_task(self) -> str:
         return """# Задание: Собственный концепт Hashable
