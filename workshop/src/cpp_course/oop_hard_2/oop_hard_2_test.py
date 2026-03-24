@@ -1,6 +1,4 @@
-from typing import Optional
-
-from src.base_module import BaseTaskClass, TestItem
+from ...base_module import BaseTaskClass, TestItem
 
 
 class OopHard2Test(BaseTaskClass):

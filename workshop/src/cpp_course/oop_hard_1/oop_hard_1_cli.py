@@ -1,4 +1,4 @@
-from src.base_module.base_cli import add_common_cli_args, get_common_cli_args, CLIParser
+from ...base_module.base_cli import add_common_cli_args, get_common_cli_args, CLIParser
 from .oop_hard_1_test import OopHard1Test
 
 
