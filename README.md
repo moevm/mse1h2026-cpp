@@ -1,14 +1,14 @@
 # mse-cpp
 
-### Инструкция по запуску
-- сборка
+## Инструкция по запуску
+### Сборка
 ```bash
 docker build -t lab-checker .    
 ``` 
 
-- запуск
+### Запуск
 
-получение справки
+1) Получение справки
 ```bash
 docker run --rm lab-checker --help
 
@@ -21,12 +21,12 @@ docker run --rm lab-checker <название задачи> --help
 
 ```
 
-получение задания
+2) Получение задания
 ```bash
 docker run --rm lab-checker <название задачи> --mode init
 
 ```
-проверка решения
+3) Проверка решения
 ```bash
 docker run --rm -v "<полный путь к папке с решением>/:/work" lab-checker <название задачи> --mode check --seed 12 --solution "<название файла с решением>"
 
