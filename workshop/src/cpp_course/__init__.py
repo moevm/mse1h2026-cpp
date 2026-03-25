@@ -4,6 +4,7 @@ from .concepts_hard1 import ConceptsHard1Test, concepts_hard1_parser
 from .concepts_hard2 import ConceptsHard2Test, concepts_hard2_parser
 from .exceptions_easy1 import ExceptionsEasy1Test, exceptions_easy1_parser
 from .lambda_easy1 import LambdaEasy1Test, lambda_easy1_parser
+from .operators_overloading import OperatorsOverloadingTest, operators_overloading_parser
 
 # Собираем все парсеры в список для удобства
 PARSERS = [
@@ -12,6 +13,7 @@ PARSERS = [
     concepts_hard2_parser,
     exceptions_easy1_parser,
     lambda_easy1_parser,
+	operators_overloading_parser,
 ]
 
 # Экспортируем все
@@ -24,4 +26,5 @@ __all__ = [
     'ConceptsHard2Test',
     'ExceptionsEasy1Test',
     'LambdaEasy1Test',
+	'OperatorsOverloadingTest',
 ]

@@ -5,12 +5,12 @@ from src import c_course, cpp_course
 import os
 
 
-
 def init_task(task: c_course.BaseTaskClass):
     print(task.init_task())
 
 
 def check_task(task: c_course.BaseTaskClass, solfile: str, name: str):
+    task.load_student_solution(solfile)
     passed, msg = task.check()
     print("Passed:", passed)
     print(msg)
@@ -32,32 +32,23 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(required=True)
 
-    course_modules = [
-        c_course,
-        importlib.import_module("src.c++_course"),
-    ]
-    cli_parsers = []
-    for course_module in course_modules:
-        cli_parsers.extend(
-            cli_parser
-            for _, cli_parser in inspect.getmembers(course_module, lambda obj: isinstance(obj, c_course.CLIParser))
-        )
-
-    for cli_parser in cli_parsers:
+    for _, cli_parser in inspect.getmembers(
+        c_course, lambda obj: isinstance(obj, c_course.CLIParser)
+    ):
         task_parser = subparsers.add_parser(cli_parser.name)
         cli_parser.add_cli_args(task_parser)
 
-    # Регистратор для cpp задачек
     for cli_parser in cpp_course.PARSERS:
         task_parser = subparsers.add_parser(cli_parser.name)
         cli_parser.add_cli_args(task_parser)
 
     args = parser.parse_args()
     task = args.func(args)
+
     match args.mode:
         case "init":
             init_task(task)
         case "check":
-            check_task(task)
+            check_task(task, args.solution, sys.argv[1])
         case "dry-run":
             dry_run_task(task)

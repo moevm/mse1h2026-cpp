@@ -4,6 +4,7 @@ from .lambda_mid_2 import LambdaMid2Test, lambda_mid_2_parser
 from .oop_easy_1 import OopEasy1Test, oop_easy_1_parser
 from .oop_hard_1 import OopHard1Test, oop_hard_1_parser
 from .oop_hard_2 import OopHard2Test, oop_hard_2_parser
+from .operators_overloading import OperatorsOverloadingTest, operators_overloading_parser
 
 __all__ = [
     "BaseTaskClass",
@@ -21,4 +22,15 @@ __all__ = [
     "oop_hard_1_parser",
     "OopHard2Test",
     "oop_hard_2_parser",
+    "OperatorsOverloadingTest",
+    "operators_overloading_parser",
+]
+
+PARSERS = [
+    lambda_mid_1_parser,
+    lambda_mid_2_parser,
+    oop_easy_1_parser,
+    oop_hard_1_parser,
+    oop_hard_2_parser,
+    operators_overloading_parser,
 ]
