@@ -94,14 +94,28 @@ docker build -t lab-checker .
 ``` 
 
 - запуск
-Из дирертории ./workshop
+
+получение справки
+```bash
+docker run --rm lab-checker --help
+
+```
+
+либо 
+```bash 
+
+docker run --rm lab-checker <название задачи> --help
+
+```
 
 получение задания
 ```bash
+docker run --rm lab-checker <название задачи> --mode init
 
 ```
 проверка решения
 ```bash
+docker run --rm -v "<полный путь к папке с решением>/:/work" lab-checker <название задачи> --mode check --seed 12 --solution "<название файла с решением>"
 
 ```
 
