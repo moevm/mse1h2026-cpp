@@ -1,11 +1,8 @@
-from .operators_overloading_test import (
-    OperatorsOverloadingEasy1Test,
-    OperatorsOverloadingMid1Test,
-    OperatorsOverloadingMid2Test,
-)
+from .easy_task_1.easy_task_1_test import OperatorsOverloadingEasy1Test
+from .easy_task_1.easy_task_1_cli import easy_task_1_parser
 
-from .operators_overloading_cli import (
-    easy_task_1_parser,
-    mid_task_1_parser,
-    mid_task_2_parser,
-)
+from .mid_task_1.mid_task_1_test import OperatorsOverloadingMid1Test
+from .mid_task_1.mid_task_1_cli import mid_task_1_parser
+
+from .mid_task_2.mid_task_2_test import OperatorsOverloadingMid2Test
+from .mid_task_2.mid_task_2_cli import mid_task_2_parser
