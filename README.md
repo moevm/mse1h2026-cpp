@@ -1,28 +1,36 @@
-# mse-template
+# mse-cpp
 
-## Установка и запуск
-Инструкции по установке и запуску проекта.
-
-### Сборка
+### Инструкция по запуску
+- сборка
 ```bash
-docker build -t mse-cpp .    
+docker build -t lab-checker .    
 ``` 
+
+- запуск
+
+получение справки
 ```bash
-docker run -it mse-cpp 
+docker run --rm lab-checker --help
+
 ```
 
-### Запуск системы
-Из дирертории ./workshop
+либо 
+```bash 
+
+docker run --rm lab-checker <название задачи> --help
+
+```
 
 получение задания
 ```bash
-python3 main.py lab1_hello --mode init --seed 12 --name "student"
+docker run --rm lab-checker <название задачи> --mode init
+
 ```
 проверка решения
 ```bash
-python3 main.py lab1_hello --mode check --seed 12 --solution "./solution.c" --name "student"
+docker run --rm -v "<полный путь к папке с решением>/:/work" lab-checker <название задачи> --mode check --seed 12 --solution "<название файла с решением>"
+
 ```
-В данный момент, в прототипе, значения для флагов менять нельзя.
 
 ## Проверка работоспособности
 Инструкции по проверке работоспособности проекта (основной функциональности и результатов).
