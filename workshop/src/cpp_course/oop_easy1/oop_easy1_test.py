@@ -1,10 +1,8 @@
-from typing import Optional
-
-from src.base_module import BaseTaskClass, TestItem
+from ...base_module import BaseTaskClass, TestItem
 
 
-class LambdaMid2Test(BaseTaskClass):
-    """Lambda functions -- Mid_difficulty_task_2"""
+class OopEasy1Test(BaseTaskClass):
+    """OOP -- Easy_Task_1"""
 
     def __init__(self, seed: int = 42, **kwargs):
         super().__init__(
@@ -15,8 +13,8 @@ class LambdaMid2Test(BaseTaskClass):
 
     def generate_task(self) -> str:
         return (
-            "Реализуйте набор лямбд: counter, accumulator, multiplier, "
-            "filter, stepCounter, maxTracker, averageCalc."
+            "Реализуйте класс Rectangle с инкапсуляцией, валидацией отрицательных "
+            "значений и методами getArea/getPerimeter/isSquare."
         )
 
     def _generate_tests(self):
@@ -24,7 +22,7 @@ class LambdaMid2Test(BaseTaskClass):
             TestItem(
                 input_str="",
                 showed_input="no input",
-                expected="1 2\n5 8\n15\n0 1\n2 4 6\n5 5 8\n5.00 6.00 7.00",
+                expected="12\n14\n0\n0 5\n0\n1",
                 compare_func=lambda x, y: x.strip() == y.strip()
             )
         ]

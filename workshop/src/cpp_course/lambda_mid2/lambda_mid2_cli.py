@@ -1,5 +1,5 @@
-from src.base_module.base_cli import add_common_cli_args, get_common_cli_args, CLIParser
-from .lambda_mid_2_test import LambdaMid2Test
+from ...base_module.base_cli import add_common_cli_args, get_common_cli_args, CLIParser
+from .lambda_mid2_test import LambdaMid2Test
 
 
 def add_cli_args_lambda_mid_2(parser):
@@ -13,6 +13,6 @@ def create_task_lambda_mid_2(args):
 
 
 lambda_mid_2_parser = CLIParser(
-    name='lambda_mid_difficulty_task_2',
+    name='lambda_mid2',
     add_cli_args=add_cli_args_lambda_mid_2
 )

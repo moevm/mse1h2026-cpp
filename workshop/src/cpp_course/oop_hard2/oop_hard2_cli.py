@@ -1,5 +1,5 @@
-from src.base_module.base_cli import add_common_cli_args, get_common_cli_args, CLIParser
-from .oop_hard_2_test import OopHard2Test
+from ...base_module.base_cli import add_common_cli_args, get_common_cli_args, CLIParser
+from .oop_hard2_test import OopHard2Test
 
 
 def add_cli_args_oop_hard_2(parser):
@@ -13,6 +13,6 @@ def create_task_oop_hard_2(args):
 
 
 oop_hard_2_parser = CLIParser(
-    name='oop_hard_task_2',
+    name='oop_hard2',
     add_cli_args=add_cli_args_oop_hard_2
 )

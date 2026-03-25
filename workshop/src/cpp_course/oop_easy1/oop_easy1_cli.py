@@ -1,5 +1,5 @@
-from src.base_module.base_cli import add_common_cli_args, get_common_cli_args, CLIParser
-from .oop_easy_1_test import OopEasy1Test
+from ...base_module.base_cli import add_common_cli_args, get_common_cli_args, CLIParser
+from .oop_easy1_test import OopEasy1Test
 
 
 def add_cli_args_oop_easy_1(parser):
@@ -13,6 +13,6 @@ def create_task_oop_easy_1(args):
 
 
 oop_easy_1_parser = CLIParser(
-    name='oop_easy_task_1',
+    name='oop_easy1',
     add_cli_args=add_cli_args_oop_easy_1
 )

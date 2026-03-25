@@ -1,22 +1,19 @@
 import argparse
 import sys
-import inspect
 from src import c_course, cpp_course
-import os
 
 
 def init_task(task: c_course.BaseTaskClass):
     print(task.init_task())
 
 
-def check_task(task: c_course.BaseTaskClass, solfile: str, name: str):
+def check_task(task: c_course.BaseTaskClass, solfile: str):
     task.load_student_solution(solfile)
     passed, msg = task.check()
     print("Passed:", passed)
     print(msg)
     if passed:
         sys.exit(0)
-
     sys.exit(1)
 
 
@@ -32,9 +29,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(required=True)
 
-    for _, cli_parser in inspect.getmembers(
-        c_course, lambda obj: isinstance(obj, c_course.CLIParser)
-    ):
+    for cli_parser in c_course.PARSERS:
         task_parser = subparsers.add_parser(cli_parser.name)
         cli_parser.add_cli_args(task_parser)
 
@@ -49,6 +44,6 @@ if __name__ == "__main__":
         case "init":
             init_task(task)
         case "check":
-            check_task(task, args.solution, sys.argv[1])
+            check_task(task, args.solution)
         case "dry-run":
             dry_run_task(task)

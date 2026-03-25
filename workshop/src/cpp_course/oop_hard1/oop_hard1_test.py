@@ -1,10 +1,8 @@
-from typing import Optional
-
-from src.base_module import BaseTaskClass, TestItem
+from ...base_module import BaseTaskClass, TestItem
 
 
-class OopEasy1Test(BaseTaskClass):
-    """OOP -- Easy_Task_1"""
+class OopHard1Test(BaseTaskClass):
+    """OOP -- Hard_Task_1"""
 
     def __init__(self, seed: int = 42, **kwargs):
         super().__init__(
@@ -15,8 +13,8 @@ class OopEasy1Test(BaseTaskClass):
 
     def generate_task(self) -> str:
         return (
-            "Реализуйте класс Rectangle с инкапсуляцией, валидацией отрицательных "
-            "значений и методами getArea/getPerimeter/isSquare."
+            "Реализуйте структуры Book и класс Library с защитой от дублей по hash, "
+            "поиском по автору/названию и печатью содержимого."
         )
 
     def _generate_tests(self):
@@ -24,7 +22,7 @@ class OopEasy1Test(BaseTaskClass):
             TestItem(
                 input_str="",
                 showed_input="no input",
-                expected="12\n14\n0\n0 5\n0\n1",
+                expected="Book already exists\n2\n0\nCpp (A, 2001) - [h1]",
                 compare_func=lambda x, y: x.strip() == y.strip()
             )
         ]
