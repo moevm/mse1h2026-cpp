@@ -1,8 +1,6 @@
 import argparse
 import sys
-import inspect
 from src import c_course, cpp_course
-import os
 
 
 
@@ -10,7 +8,7 @@ def init_task(task: c_course.BaseTaskClass):
     print(task.init_task())
 
 
-def check_task(task: c_course.BaseTaskClass, solfile: str, name: str):
+def check_task(task: c_course.BaseTaskClass):
     passed, msg = task.check()
     print("Passed:", passed)
     print(msg)
@@ -32,18 +30,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(required=True)
 
-    course_modules = [
-        c_course,
-        importlib.import_module("src.c++_course"),
-    ]
-    cli_parsers = []
-    for course_module in course_modules:
-        cli_parsers.extend(
-            cli_parser
-            for _, cli_parser in inspect.getmembers(course_module, lambda obj: isinstance(obj, c_course.CLIParser))
-        )
-
-    for cli_parser in cli_parsers:
+    for cli_parser in c_course.PARSERS:
         task_parser = subparsers.add_parser(cli_parser.name)
         cli_parser.add_cli_args(task_parser)
 
