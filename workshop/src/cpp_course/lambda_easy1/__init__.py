@@ -1,2 +1,0 @@
-from .lambda_easy1_test import LambdaEasy1Test
-from .lambda_easy1_cli import lambda_easy1_parser

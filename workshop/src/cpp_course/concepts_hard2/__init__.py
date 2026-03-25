@@ -1,2 +1,0 @@
-from .concepts_hard2_test import ConceptsHard2Test
-from .concepts_hard2_cli import concepts_hard2_parser

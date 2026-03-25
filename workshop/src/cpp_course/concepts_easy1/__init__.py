@@ -1,2 +1,0 @@
-from .concepts_easy1_test import ConceptsEasy1Test
-from .concepts_easy1_cli import concepts_easy1_parser
