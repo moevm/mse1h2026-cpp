@@ -1,4 +1,4 @@
-from src.c_course.base_module import BaseTaskClass, TestItem
+from ....base_module import BaseTaskClass, TestItem
 import subprocess
 
 class OperatorsOverloadingEasy1Test(BaseTaskClass):
