@@ -118,12 +118,7 @@ struct Person
                 f"{average_age:.2f}"
             )
 
-            def make_compare(
-                exp_count=older_count,
-                exp_salary=first_salary,
-                exp_names=names_line,
-                exp_avg=average_age,
-            ):
+            def make_compare(exp_count, exp_salary, exp_names, exp_avg):
                 def _compare(obt: str, _exp: str) -> bool:
                     lines = [line.strip() for line in obt.strip().splitlines() if line.strip()]
                     if len(lines) != 4:
@@ -147,5 +142,5 @@ struct Person
                 input_str="\n".join(input_lines),
                 showed_input=" | ".join(input_lines),
                 expected=expected,
-                compare_func=make_compare()
+                compare_func=make_compare(older_count, first_salary, names_line, average_age)
             ))

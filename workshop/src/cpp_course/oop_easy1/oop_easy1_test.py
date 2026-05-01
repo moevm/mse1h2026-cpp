@@ -86,13 +86,13 @@ class OopEasy1Test(BaseTaskClass):
             ]
 
             def make_compare(
-                exp_area=area,
-                exp_perimeter=perimeter,
-                exp_square=is_square,
-                exp_width=width2,
-                exp_height=height2,
-                exp_area2=area2,
-                exp_square2=is_square2,
+                exp_area,
+                exp_perimeter,
+                exp_square,
+                exp_width,
+                exp_height,
+                exp_area2,
+                exp_square2,
             ):
                 def _compare(obt: str, _exp: str) -> bool:
                     lines = [line.strip() for line in obt.strip().splitlines() if line.strip()]
@@ -126,5 +126,13 @@ class OopEasy1Test(BaseTaskClass):
                 input_str=input_line,
                 showed_input=input_line,
                 expected="\n".join(expected_lines),
-                compare_func=make_compare()
+                compare_func=make_compare(
+                    area,
+                    perimeter,
+                    is_square,
+                    width2,
+                    height2,
+                    area2,
+                    is_square2,
+                )
             ))

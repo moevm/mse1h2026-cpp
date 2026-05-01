@@ -103,10 +103,10 @@ class OopHard1Test(BaseTaskClass):
             input_lines.append(remove_hash)
             input_lines.append(title_query)
 
-            def make_compare(expected=output_lines):
+            def make_compare(expected):
                 def _compare(obt: str, _exp: str) -> bool:
                     lines = [line.strip() for line in obt.strip().splitlines() if line.strip()]
-                    return lines == expected
+                    return lines == list(expected)
 
                 return _compare
 
@@ -114,5 +114,5 @@ class OopHard1Test(BaseTaskClass):
                 input_str="\n".join(input_lines),
                 showed_input=" | ".join(input_lines),
                 expected="\n".join(output_lines),
-                compare_func=make_compare()
+                compare_func=make_compare(tuple(output_lines))
             ))

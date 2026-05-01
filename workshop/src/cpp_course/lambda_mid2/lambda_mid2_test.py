@@ -158,15 +158,12 @@ class LambdaMid2Test(BaseTaskClass):
                 avg_line,
             ]
 
-            def make_compare(
-                exp_lines=expected_lines,
-                exp_avg=avg_line_vals,
-            ):
+            def make_compare(exp_lines, exp_avg):
                 def _compare(obt: str, _exp: str) -> bool:
                     lines = [line.strip() for line in obt.strip().splitlines() if line.strip()]
                     if len(lines) != 7:
                         return False
-                    if lines[:6] != exp_lines[:6]:
+                    if lines[:6] != list(exp_lines[:6]):
                         return False
                     try:
                         avg_values = [float(v) for v in lines[6].split()]
@@ -185,5 +182,5 @@ class LambdaMid2Test(BaseTaskClass):
                 input_str="\n".join(input_lines),
                 showed_input=" | ".join(input_lines),
                 expected="\n".join(expected_lines),
-                compare_func=make_compare()
+                compare_func=make_compare(tuple(expected_lines), tuple(avg_line_vals))
             ))

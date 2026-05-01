@@ -100,7 +100,7 @@ class OopHard2Test(BaseTaskClass):
                 f"{bad_row} {bad_col}",
             ]
 
-            def make_compare(exp_matrix=format_matrix(identity), exp_value=product[row][col]):
+            def make_compare(exp_matrix, exp_value):
                 def _compare(obt: str, _exp: str) -> bool:
                     lines = [line.rstrip() for line in obt.strip().splitlines() if line.strip()]
                     if len(lines) != 5:
@@ -120,5 +120,5 @@ class OopHard2Test(BaseTaskClass):
                 input_str="\n".join(input_lines),
                 showed_input=" | ".join(input_lines),
                 expected=expected,
-                compare_func=make_compare()
+                compare_func=make_compare(format_matrix(identity), product[row][col])
             ))
