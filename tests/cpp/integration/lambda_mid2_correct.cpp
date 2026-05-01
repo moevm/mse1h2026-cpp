@@ -3,6 +3,32 @@
 #include <limits>
 
 int main() {
+    int acc1, acc2;
+    int factor, multValue;
+    int threshold, filter1, filter2;
+    int step;
+    int max1, max2, max3;
+    int avg1, avg2, avg3;
+
+    if (!(std::cin >> acc1 >> acc2)) {
+        return 0;
+    }
+    if (!(std::cin >> factor >> multValue)) {
+        return 0;
+    }
+    if (!(std::cin >> threshold >> filter1 >> filter2)) {
+        return 0;
+    }
+    if (!(std::cin >> step)) {
+        return 0;
+    }
+    if (!(std::cin >> max1 >> max2 >> max3)) {
+        return 0;
+    }
+    if (!(std::cin >> avg1 >> avg2 >> avg3)) {
+        return 0;
+    }
+
     int count = 0;
     auto counter = [count]() mutable {
         count += 1;
@@ -15,14 +41,10 @@ int main() {
         return sum;
     };
 
-    int factor = 3;
     auto multiplier = [factor](int x) { return x * factor; };
-
-    int threshold = 10;
     auto filter = [threshold](int x) { return x > threshold; };
 
     int stepCount = 0;
-    int step = 2;
     auto stepCounter = [stepCount, step]() mutable {
         stepCount += step;
         return stepCount;
@@ -45,11 +67,11 @@ int main() {
     };
 
     std::cout << counter() << " " << counter() << "\n";
-    std::cout << accumulator(5) << " " << accumulator(3) << "\n";
-    std::cout << multiplier(5) << "\n";
-    std::cout << filter(5) << " " << filter(15) << "\n";
+    std::cout << accumulator(acc1) << " " << accumulator(acc2) << "\n";
+    std::cout << multiplier(multValue) << "\n";
+    std::cout << filter(filter1) << " " << filter(filter2) << "\n";
     std::cout << stepCounter() << " " << stepCounter() << " " << stepCounter() << "\n";
-    std::cout << maxTracker(5) << " " << maxTracker(3) << " " << maxTracker(8) << "\n";
+    std::cout << maxTracker(max1) << " " << maxTracker(max2) << " " << maxTracker(max3) << "\n";
     std::cout << std::fixed << std::setprecision(2)
-              << averageCalc(5) << " " << averageCalc(7) << " " << averageCalc(9) << "\n";
+              << averageCalc(avg1) << " " << averageCalc(avg2) << " " << averageCalc(avg3) << "\n";
 }

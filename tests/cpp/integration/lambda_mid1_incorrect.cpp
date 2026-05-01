@@ -11,11 +11,17 @@ struct Person {
 };
 
 int main() {
-    std::vector<Person> people = {
-        {"Ivan", 35, 100.0},
-        {"Anna", 28, 200.0},
-        {"Boris", 28, 150.0},
-    };
+    int n = 0;
+    if (!(std::cin >> n)) {
+        return 0;
+    }
+    std::vector<Person> people;
+    people.reserve(n);
+    for (int i = 0; i < n; ++i) {
+        Person p;
+        std::cin >> p.name >> p.age >> p.salary;
+        people.push_back(p);
+    }
 
     auto isOlderThan30 = [](const Person& p) { return p.age >= 30; };
     auto increaseSalary = [](Person& p) { p.salary += 10; };
@@ -35,11 +41,19 @@ int main() {
         }
     }
 
-    increaseSalary(people[1]);
+    for (auto& p : people) {
+        increaseSalary(p);
+    }
     std::sort(people.begin(), people.end(), compare);
 
     std::cout << olderCount << "\n";
-    std::cout << static_cast<int>(people[0].salary) << "\n";
-    std::cout << people[0].name << " " << people[1].name << " " << people[2].name << "\n";
+    std::cout << std::fixed << std::setprecision(2) << people.front().salary << "\n";
+    for (size_t i = 0; i < people.size(); ++i) {
+        if (i > 0) {
+            std::cout << " ";
+        }
+        std::cout << people[i].name;
+    }
+    std::cout << "\n";
     std::cout << std::fixed << std::setprecision(2) << calculateAverageAge() << "\n";
 }

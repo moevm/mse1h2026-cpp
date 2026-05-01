@@ -70,13 +70,34 @@ public:
 };
 
 int main() {
-    Matrix3x3 id = Matrix3x3::Identity();
-    Matrix3x3 b{1, 2, 3, 4, 5, 6, 7, 8, 9};
-    Matrix3x3 c = id * b;
+    int a[9];
+    int b[9];
+    for (int i = 0; i < 9; ++i) {
+        if (!(std::cin >> a[i])) {
+            return 0;
+        }
+    }
+    for (int i = 0; i < 9; ++i) {
+        if (!(std::cin >> b[i])) {
+            return 0;
+        }
+    }
 
-    std::cout << c(2, 1) << "\n";
+    int row, col, badRow, badCol;
+    if (!(std::cin >> row >> col)) {
+        return 0;
+    }
+    if (!(std::cin >> badRow >> badCol)) {
+        return 0;
+    }
+
+    Matrix3x3 aMat{a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8]};
+    Matrix3x3 bMat{b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7], b[8]};
+    Matrix3x3 c = aMat * bMat;
+
+    std::cout << c(row, col) << "\n";
     try {
-        (void)c(3, 0);
+        (void)c(badRow, badCol);
     } catch (const std::out_of_range&) {
         std::cout << "oor\n";
     }

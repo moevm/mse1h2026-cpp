@@ -53,13 +53,32 @@ public:
 };
 
 int main() {
-    Library library;
-    library.addBook({"Cpp", "A", 2001, "h1"});
-    library.addBook({"Algo", "A", 2005, "h2"});
-    library.addBook({"Dup", "A", 2020, "h1"});
+    int n = 0;
+    if (!(std::cin >> n)) {
+        return 0;
+    }
 
-    std::cout << library.findBooksByAuthor("A").size() << "\n";
-    library.removeBook("h2");
-    std::cout << library.findBooksByTitle("Algo").size() << "\n";
+    Library library;
+    for (int i = 0; i < n; ++i) {
+        Book book;
+        std::cin >> book.title >> book.author >> book.year >> book.hash;
+        library.addBook(book);
+    }
+
+    Book dup;
+    std::cin >> dup.title >> dup.author >> dup.year >> dup.hash;
+    library.addBook(dup);
+
+    std::string authorQuery;
+    std::string removeHash;
+    std::string titleQuery;
+
+    std::cin >> authorQuery;
+    std::cin >> removeHash;
+    std::cin >> titleQuery;
+
+    std::cout << library.findBooksByAuthor(authorQuery).size() << "\n";
+    library.removeBook(removeHash);
+    std::cout << library.findBooksByTitle(titleQuery).size() << "\n";
     library.printLibrary();
 }
