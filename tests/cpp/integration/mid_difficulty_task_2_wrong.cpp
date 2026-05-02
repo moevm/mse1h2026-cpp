@@ -1,30 +1,15 @@
 #include <iostream>
-
-class Fraction {
-private:
-    int n, d;
-
-public:
-    Fraction(int num = 0, int den = 1) : n(num), d(den) {}
-
-    Fraction operator+(const Fraction& o) const {
-        return Fraction(n + o.n, d);
-    }
-
-    bool operator==(const Fraction& o) const {
-        return n == o.n;
-    }
-
-    operator double() const {
-        return n / d;
-    }
-};
+using namespace std;
 
 int main() {
-    Fraction a(1,2), b(1,3);
-    Fraction c = a + b;
+    int a, b, c, d;
+    cin >> a >> b >> c >> d;
 
-    if (!(c == Fraction(5,6))) return 1; 
+    if (b + d == 0) {
+        cout << "undefined";
+    } else {
+        cout << a + c << "/" << b + d; // WRONG
+    }
 
     return 0;
 }

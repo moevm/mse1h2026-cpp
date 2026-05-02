@@ -1,6 +1,5 @@
 from ....base_module import BaseTaskClass, TestItem
-import subprocess
-import os
+import random
 
 
 class OperatorsOverloadingMid2Test(BaseTaskClass):
@@ -9,50 +8,40 @@ class OperatorsOverloadingMid2Test(BaseTaskClass):
         super().__init__(compile_name="program", seed=seed, **kwargs)
 
     def generate_task(self):
-        return """Mid task 2:
-Implement class Fraction with arithmetic and comparison operators
+        return """# Operators Overloading Mid 2
+
+Реализуйте класс Fraction:
+- operator+ для сложения дробей
+- operator== для проверки равенства
+
+Дробь задаётся двумя числами: числитель и знаменатель.
+
+Ввод:
+a b c d
+(дроби a/b и c/d)
+
+Вывод:
+результат сложения дробей в формате num/den
 """
 
     def _generate_tests(self):
-        self.tests = [
-            TestItem(
-                input_str="",
-                showed_input="no input",
-                expected="1/2\n3/4\ntrue",   # <-- adjust
+        random.seed(self.seed)
+        self.tests = []
+
+        for _ in range(5):
+            a = random.randint(-5, 5)
+            b = random.randint(1, 5)
+            c = random.randint(-5, 5)
+            d = random.randint(1, 5)
+
+            num = a * d + c * b
+            den = b * d
+
+            expected = f"{num}/{den}"
+
+            self.tests.append(TestItem(
+                input_str=f"{a} {b} {c} {d}",
+                showed_input=f"{a}/{b} + {c}/{d}",
+                expected=expected,
                 compare_func=lambda x, y: x.strip() == y.strip()
-            )
-        ]
-
-    def compile(self, source_file: str) -> str:
-        exe_file = "solution.exe"
-        source_file = os.path.join("/work", os.path.basename(source_file))
-
-        result = subprocess.run(
-            ["g++", source_file, "-o", exe_file],
-            capture_output=True,
-            text=True
-        )
-
-        if result.returncode != 0:
-            raise RuntimeError(f"Compilation failed:\n{result.stderr}")
-
-        return exe_file
-
-    def run(self, exe_file: str) -> str:
-        result = subprocess.run(
-            [f"./{exe_file}"],
-            capture_output=True,
-            text=True
-        )
-        return result.stdout
-
-    def check(self):
-        exe = self.compile(self.solution_path)
-
-        for test in self.tests:
-            output = self.run(exe)
-
-            if not test.compare_func(output, test.expected):
-                return False, f"Wrong answer\nExpected:\n{test.expected}\nGot:\n{output}"
-
-        return True, "OK"
+            ))

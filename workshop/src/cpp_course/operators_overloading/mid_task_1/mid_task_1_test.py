@@ -1,6 +1,5 @@
 from ....base_module import BaseTaskClass, TestItem
-import subprocess
-import os
+import random
 
 
 class OperatorsOverloadingMid1Test(BaseTaskClass):
@@ -9,51 +8,37 @@ class OperatorsOverloadingMid1Test(BaseTaskClass):
         super().__init__(compile_name="program", seed=seed, **kwargs)
 
     def generate_task(self):
-        return """Mid task 1:
-Implement class SafeArray with overloaded operators:
-[], =, +, ()
+        return """# Operators Overloading Mid 1
+
+Реализуйте класс SafeArray:
+- operator[] для доступа к элементам
+- operator+ для поэлементного сложения
+- operator= для копирования
+
+Ввод:
+n
+массив A (n чисел)
+массив B (n чисел)
+
+Вывод:
+результат поэлементного сложения A+B
 """
 
     def _generate_tests(self):
-        self.tests = [
-            TestItem(
-                input_str="",
-                showed_input="no input",
-                expected="10\n20\n30",   # <-- adjust
+        random.seed(self.seed)
+        self.tests = []
+
+        for _ in range(5):
+            n = random.randint(3, 5)
+            a = [random.randint(-10, 10) for _ in range(n)]
+            b = [random.randint(-10, 10) for _ in range(n)]
+
+            result = [a[i] + b[i] for i in range(n)]
+            expected = " ".join(map(str, result))
+
+            self.tests.append(TestItem(
+                input_str=f"{n}\n{' '.join(map(str,a))}\n{' '.join(map(str,b))}",
+                showed_input=f"n={n}, A={a}, B={b}",
+                expected=expected,
                 compare_func=lambda x, y: x.strip() == y.strip()
-            )
-        ]
-
-    def compile(self, source_file: str) -> str:
-        exe_file = "solution.exe"
-        source_file = os.path.join("/work", os.path.basename(source_file))
-
-        result = subprocess.run(
-            ["g++", source_file, "-o", exe_file],
-            capture_output=True,
-            text=True
-        )
-
-        if result.returncode != 0:
-            raise RuntimeError(f"Compilation failed:\n{result.stderr}")
-
-        return exe_file
-
-    def run(self, exe_file: str) -> str:
-        result = subprocess.run(
-            [f"./{exe_file}"],
-            capture_output=True,
-            text=True
-        )
-        return result.stdout
-
-    def check(self):
-        exe = self.compile(self.solution_path)
-
-        for test in self.tests:
-            output = self.run(exe)
-
-            if not test.compare_func(output, test.expected):
-                return False, f"Wrong answer\nExpected:\n{test.expected}\nGot:\n{output}"
-
-        return True, "OK"
+            ))

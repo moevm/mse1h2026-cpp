@@ -1,26 +1,30 @@
 #include <iostream>
+using namespace std;
 
 class Point {
-private:
-    double x, y;
-
 public:
-    Point(double x = 0, double y = 0) : x(x), y(y) {}
+    int x, y;
 
-    Point operator+(const Point& other) const {
-        return Point(x + other.x, y + other.y);
+    Point(int x, int y) : x(x), y(y) {}
+
+    Point operator+(const Point& o) const {
+        return Point(x + o.x, y + o.y);
     }
 
-    bool operator==(const Point& other) const {
-        return x == other.x && y == other.y;
+    bool operator==(const Point& o) const {
+        return x == o.x && y == o.y;
     }
 };
 
 int main() {
-    Point a(1, 2), b(3, 4);
+    int x1, y1, x2, y2;
+    cin >> x1 >> y1 >> x2 >> y2;
+
+    Point a(x1, y1), b(x2, y2);
     Point c = a + b;
 
-    if (!(c == Point(4, 6))) return 1;
+    cout << c.x << " " << c.y << "\n";
+    cout << (a == b);
 
     return 0;
 }

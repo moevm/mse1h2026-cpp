@@ -1,6 +1,5 @@
 from ....base_module import BaseTaskClass, TestItem
-import subprocess
-import os
+import random
 
 
 class OperatorsOverloadingEasy1Test(BaseTaskClass):
@@ -9,49 +8,37 @@ class OperatorsOverloadingEasy1Test(BaseTaskClass):
         super().__init__(compile_name="program", seed=seed, **kwargs)
 
     def generate_task(self):
-        return "Easy task: overload operators + and =="
+        return """# Operators Overloading Easy
+
+Реализовать класс Point:
+- operator+
+- operator==
+
+В main:
+считать 4 числа: x1 y1 x2 y2
+вывести:
+(x1+x2) (y1+y2)
+и затем 1 если равны, иначе 0
+"""
 
     def _generate_tests(self):
-        self.tests = [
-            TestItem(
-                input_str="",
-                showed_input="no input",
-                expected="5\ntrue",   # <-- adjust if needed
+        random.seed(self.seed)
+        self.tests = []
+
+        for _ in range(5):
+            x1, y1 = random.randint(-10, 10), random.randint(-10, 10)
+            x2, y2 = random.randint(-10, 10), random.randint(-10, 10)
+
+            sx = x1 + x2
+            sy = y1 + y2
+
+            eq = 1 if (x1 == x2 and y1 == y2) else 0
+
+            expected = f"{sx} {sy}\n{eq}"
+
+            self.tests.append(TestItem(
+                input_str=f"{x1} {y1} {x2} {y2}",
+                showed_input=f"{x1},{y1} + {x2},{y2}",
+                expected=expected,
                 compare_func=lambda x, y: x.strip() == y.strip()
-            )
-        ]
-
-    def compile(self, source_file: str) -> str:
-        exe_file = "solution.exe"
-
-        source_file = os.path.join("/work", os.path.basename(source_file))
-
-        result = subprocess.run(
-            ["g++", source_file, "-o", exe_file],
-            capture_output=True,
-            text=True
-        )
-
-        if result.returncode != 0:
-            raise RuntimeError(f"Compilation failed:\n{result.stderr}")
-
-        return exe_file
-
-    def run(self, exe_file: str) -> str:
-        result = subprocess.run(
-            [f"./{exe_file}"],
-            capture_output=True,
-            text=True
-        )
-        return result.stdout
-
-    def check(self):
-        exe = self.compile(self.solution_path)
-
-        for test in self.tests:
-            output = self.run(exe)
-
-            if not test.compare_func(output, test.expected):
-                return False, f"Wrong answer\nExpected:\n{test.expected}\nGot:\n{output}"
-
-        return True, "OK"
+            ))
