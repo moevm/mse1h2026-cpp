@@ -1,24 +1,57 @@
 from ....base_module import BaseTaskClass, TestItem
 import subprocess
+import os
+
 
 class OperatorsOverloadingEasy1Test(BaseTaskClass):
 
+    def __init__(self, seed: int = 42, **kwargs):
+        super().__init__(compile_name="program", seed=seed, **kwargs)
+
     def generate_task(self):
-        return "Easy task: overload + and =="
+        return "Easy task: overload operators + and =="
 
     def _generate_tests(self):
         self.tests = [
-            TestItem("", "", "", lambda x, y: True)
+            TestItem(
+                input_str="",
+                showed_input="no input",
+                expected="5\ntrue",   # <-- adjust if needed
+                compare_func=lambda x, y: x.strip() == y.strip()
+            )
         ]
 
-    def compile(self, source_file):
-        exe = "solution.exe"
-        subprocess.run(["g++", source_file, "-o", exe], check=True)
-        return exe
+    def compile(self, source_file: str) -> str:
+        exe_file = "solution.exe"
 
-    def run(self, exe):
-        return subprocess.run([exe]).returncode
+        source_file = os.path.join("/work", os.path.basename(source_file))
+
+        result = subprocess.run(
+            ["g++", source_file, "-o", exe_file],
+            capture_output=True,
+            text=True
+        )
+
+        if result.returncode != 0:
+            raise RuntimeError(f"Compilation failed:\n{result.stderr}")
+
+        return exe_file
+
+    def run(self, exe_file: str) -> str:
+        result = subprocess.run(
+            [f"./{exe_file}"],
+            capture_output=True,
+            text=True
+        )
+        return result.stdout
 
     def check(self):
         exe = self.compile(self.solution_path)
-        return (True, "OK") if self.run(exe) == 0 else (False, "Wrong answer")
+
+        for test in self.tests:
+            output = self.run(exe)
+
+            if not test.compare_func(output, test.expected):
+                return False, f"Wrong answer\nExpected:\n{test.expected}\nGot:\n{output}"
+
+        return True, "OK"
