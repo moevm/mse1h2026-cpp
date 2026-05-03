@@ -70,15 +70,45 @@ public:
 };
 
 int main() {
-    Matrix3x3 id = Matrix3x3::Identity();
-    Matrix3x3 b{1, 2, 3, 4, 5, 6, 7, 8, 9};
-    Matrix3x3 c = id * b;
+    int valuesA[9];
+    int valuesB[9];
+    for (int i = 0; i < 9; ++i) {
+        if (!(std::cin >> valuesA[i])) {
+            return 0;
+        }
+    }
+    for (int i = 0; i < 9; ++i) {
+        std::cin >> valuesB[i];
+    }
 
-    std::cout << c(2, 1) << "\n";
+    Matrix3x3 a{valuesA[0], valuesA[1], valuesA[2],
+                valuesA[3], valuesA[4], valuesA[5],
+                valuesA[6], valuesA[7], valuesA[8]};
+    Matrix3x3 b{valuesB[0], valuesB[1], valuesB[2],
+                valuesB[3], valuesB[4], valuesB[5],
+                valuesB[6], valuesB[7], valuesB[8]};
+
+    int rMod = 0;
+    int cMod = 0;
+    int newVal = 0;
+    std::cin >> rMod >> cMod >> newVal;
+    a(rMod, cMod) = newVal;
+
+    int rRead = 0;
+    int cRead = 0;
+    std::cin >> rRead >> cRead;
+
+    int rBad = 0;
+    int cBad = 0;
+    std::cin >> rBad >> cBad;
+
+    Matrix3x3 product = a * b;
+    std::cout << product << "\n";
+    std::cout << a(rRead, cRead) << "\n";
     try {
-        (void)c(3, 0);
+        (void)a(rBad, cBad);
     } catch (const std::out_of_range&) {
-        std::cout << "oor\n";
+        std::cout << "out_of_range\n";
     }
     std::cout << Matrix3x3::Identity() << "\n";
 }
