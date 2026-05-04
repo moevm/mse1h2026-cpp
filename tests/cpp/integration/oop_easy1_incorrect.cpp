@@ -20,16 +20,28 @@ public:
 };
 
 int main() {
-    Rectangle r(3, 4);
-    std::cout << static_cast<int>(r.getArea()) << "\n";
-    std::cout << static_cast<int>(r.getPerimeter()) << "\n";
+    double w1 = 0.0;
+    double h1 = 0.0;
+    if (!(std::cin >> w1 >> h1)) {
+        return 0;
+    }
+
+    Rectangle r(w1, h1);
+    std::cout << r.getArea() << "\n";
+    std::cout << r.getPerimeter() << "\n";
     std::cout << r.isSquare() << "\n";
 
-    r.setWidth(-2);
-    r.setHeight(5);
-    std::cout << static_cast<int>(r.getWidth()) << " " << static_cast<int>(r.getHeight()) << "\n";
-    std::cout << static_cast<int>(r.getArea()) << "\n";
+    double w2 = 0.0;
+    double h2 = 0.0;
+    std::cin >> w2 >> h2;
+    r.setWidth(w2);
+    r.setHeight(h2);
+    std::cout << r.getWidth() << " " << r.getHeight() << "\n";
+    std::cout << r.getArea() << "\n";
 
-    Rectangle sq(7, 7);
+    double w3 = 0.0;
+    double h3 = 0.0;
+    std::cin >> w3 >> h3;
+    Rectangle sq(w3, h3);
     std::cout << sq.isSquare() << "\n";
 }
