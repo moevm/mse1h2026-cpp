@@ -86,7 +86,7 @@ class BaseTaskClass:
         """
         General method to compile C work
         """
-        solution_name = "/work/" + self.solution
+        solution_name = self.solution
         obj_files = []
 
         for src_file in self.check_files.keys():
@@ -95,8 +95,9 @@ class BaseTaskClass:
                 return f"Ошибка при компиляции кода системы проверки, файл {src_file} (обратитесь за помощью к авторам курса):\n{err}"
 
             obj_files.append(src_file[:src_file.find('.') + 1] + "o")
+        output_folder = os.path.dirname(self.solution)
+        output_file = os.path.join(output_folder, self.prog_name)
 
-        output_file = os.path.join(self.jail_path, self.prog_name)
         if obj_files:
             compile_args_list = [compiler, solution_name] + obj_files + shlex.split(compile_args) + ["-o", output_file]
         else:
@@ -151,14 +152,15 @@ class BaseTaskClass:
         """
         Run solution natively (compiled with gcc)
         """
+        print()
         # Формируем путь к исполняемому файлу
         if self.jail_path and self.jail_path.strip():
-            # Если есть jail_path, используем его
-            prog_path = os.path.join(self.jail_path, self.prog_name)
+            output_folder = os.path.dirname(self.solution)
+            prog_path = os.path.join(output_folder, self.prog_name)
             run_command = f"{self.jail_exec} {self.jail_path} {prog_path} {prog_args}"
         else:
-            # Если jail_path пустой, запускаем из текущей директории
-            prog_path = Path.cwd() / self.prog_name
+            output_folder = os.path.dirname(self.solution)
+            prog_path = os.path.join(output_folder, self.prog_name)
             run_command = f"{prog_path} {prog_args}"
 
 
@@ -228,6 +230,7 @@ class BaseTaskClass:
         try:
             if (msg := self.check_sol_prereq()) is not None:
                 return False, msg
+
             if (msg := self.compile()) is not None:
                 return False, msg
 
