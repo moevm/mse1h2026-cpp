@@ -41,7 +41,7 @@
   - Mid_difficulty_task_1 - очень сложно **НЕ ГОТОВО.**
   - Mid_difficulty_task_2 - очень сложно **НЕ ГОТОВО.**
 - **STL**
-  - Easy_task_1 - **НЕ ГОТОВО.**
+  - Easy_task_1 - **ГОТОВО.**
   - Hard_task_1 - **НЕ ГОТОВО.**
   - Hard_task_2 - **НЕ ГОТОВО.**
   - Mid_difficulty_task_1 - **НЕ ГОТОВО.**
