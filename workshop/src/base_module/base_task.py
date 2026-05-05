@@ -148,7 +148,7 @@ class BaseTaskClass:
         # Формируем путь к исполняемому файлу
         if self.jail_path and self.jail_path.strip():
             prog_path = os.path.join(self.jail_path, self.prog_name)
-            run_command = f"{self.jail_exec} {self.jail_path} {prog_path} {prog_args}"
+            run_command = f"{self.jail_path} {prog_path} {prog_args}"
         else:
             # Если jail_path пустой (локальный запуск)
             prog_path = os.path.join(os.path.dirname(os.path.abspath(self.solution)), self.prog_name)
