@@ -160,7 +160,6 @@ class BaseTaskClass:
             output_folder = os.path.dirname(self.solution)
             prog_path = os.path.join(output_folder, self.prog_name)
             run_command = f"{prog_path} {prog_args}"
-
         try:
             p = subprocess.run(
                 shlex.split(run_command),
