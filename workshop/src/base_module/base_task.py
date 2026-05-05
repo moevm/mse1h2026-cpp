@@ -86,7 +86,7 @@ class BaseTaskClass:
         """
         General method to compile C work
         """
-        solution_name = "/work/" + self.solution
+        solution_name = self.jail_path if self.jail_path else '' + "/work/" + self.solution
         obj_files = []
 
         for src_file in self.check_files.keys():
