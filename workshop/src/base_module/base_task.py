@@ -78,14 +78,7 @@ class BaseTaskClass:
         except UnicodeDecodeError:
             return f"Ошибка декодирования вывода. Ожидалась UTF-8, получены бинарные данные: {p.stdout!r}"
 
-    def _compile_internal(
-            self,
-            compiler,
-            compile_args
-    ) -> Optional[str]:
-        """
-        General method to compile C work
-        """
+    def _compile_internal(self, compiler, compile_args) -> Optional[str]:
         solution_name = self.solution
         obj_files = []
 
@@ -93,15 +86,16 @@ class BaseTaskClass:
             err = self._compile_file(src_file, compiler, compile_args)
             if err is not None:
                 return f"Ошибка при компиляции кода системы проверки, файл {src_file} (обратитесь за помощью к авторам курса):\n{err}"
-
             obj_files.append(src_file[:src_file.find('.') + 1] + "o")
-        output_folder = os.path.dirname(self.solution)
-        output_file = os.path.join(output_folder, self.prog_name)
+
+        # Используем jail_path для выходного файла
+        output_file = os.path.join(self.jail_path, self.prog_name)
 
         if obj_files:
             compile_args_list = [compiler, solution_name] + obj_files + shlex.split(compile_args) + ["-o", output_file]
         else:
             compile_args_list = [compiler, solution_name] + shlex.split(compile_args) + ["-o", output_file]
+
         try:
             p = subprocess.run(
                 compile_args_list,
@@ -153,12 +147,11 @@ class BaseTaskClass:
         """
         # Формируем путь к исполняемому файлу
         if self.jail_path and self.jail_path.strip():
-            output_folder = os.path.dirname(self.solution)
-            prog_path = os.path.join(output_folder, self.prog_name)
-            run_command = f"{prog_path} {prog_args}"
+            prog_path = os.path.join(self.jail_path, self.prog_name)
+            run_command = f"{self.jail_exec} {self.jail_path} {prog_path} {prog_args}"
         else:
-            output_folder = os.path.dirname(self.solution)
-            prog_path = os.path.join(output_folder, self.prog_name)
+            # Если jail_path пустой (локальный запуск)
+            prog_path = os.path.join(os.path.dirname(os.path.abspath(self.solution)), self.prog_name)
             run_command = f"{prog_path} {prog_args}"
         try:
             p = subprocess.run(
