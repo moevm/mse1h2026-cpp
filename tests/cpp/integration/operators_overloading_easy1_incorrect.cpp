@@ -5,14 +5,14 @@ class Point {
 public:
     int x, y;
 
-    Point(int x, int y) : x(x), y(y) {}
+    Point(int x = 0, int y = 0) : x(x), y(y) {}
 
     Point operator+(const Point& o) const {
-        return Point(x + o.x, y); // wrong
+        return Point(x + o.x + 1, y + o.y);
     }
 
     bool operator==(const Point& o) const {
-        return x == o.x; // wrong
+        return x != o.x || y != o.y;
     }
 };
 

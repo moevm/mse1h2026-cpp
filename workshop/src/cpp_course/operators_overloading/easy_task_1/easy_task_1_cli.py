@@ -24,7 +24,3 @@ easy_task_1_parser = CLIParser(
     name='operators_overloading_easy_1',
     add_cli_args=add_cli_args_easy
 )
-
-
-from pathlib import Path
-

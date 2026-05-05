@@ -6,10 +6,13 @@ int main() {
     cin >> a >> b >> c >> d;
 
     if (b + d == 0) {
-        cout << "undefined";
-    } else {
-        cout << a + c << "/" << b + d; // WRONG
+        cout << "undefined\n0";
+        return 0;
     }
+
+    cout << a + c << "/" << b + d << "\n";
+
+    cout << (a == c);
 
     return 0;
 }

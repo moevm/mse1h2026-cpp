@@ -5,7 +5,7 @@ class Point {
 public:
     int x, y;
 
-    Point(int x, int y) : x(x), y(y) {}
+    Point(int x = 0, int y = 0) : x(x), y(y) {}
 
     Point operator+(const Point& o) const {
         return Point(x + o.x, y + o.y);

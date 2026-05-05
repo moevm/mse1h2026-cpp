@@ -3,42 +3,106 @@ import random
 
 
 class OperatorsOverloadingMid1Test(BaseTaskClass):
-
     def __init__(self, seed: int = 42, **kwargs):
         super().__init__(compile_name="program", seed=seed, **kwargs)
 
-    def generate_task(self):
-        return """# Operators Overloading Mid 1
+    def generate_task(self) -> str:
+        return """Задание
+Дан класс SafeArray, который реализует динамический массив целых чисел с проверкой выхода за границы. Класс уже содержит конструкторы, деструктор и вспомогательные методы. Вам необходимо дописать класс SafeArray, добавив в него перегрузку пяти операторов:
 
-Реализуйте класс SafeArray:
-- operator[] для доступа к элементам
-- operator+ для поэлементного сложения
-- operator= для копирования
+Оператор [] - для доступа к элементам массива. Должен проверять выход за границы и выбрасывать исключение std::out_of_range.
+Оператор = - для копирования массивов (глубокое копирование).
+Оператор + - для склеивания двух массивов.
+Оператор () - для изменения размера массива (принимает новый размер).
 
-Ввод:
-n
-массив A (n чисел)
-массив B (n чисел)
+Код:
+#include <iostream>
 
-Вывод:
-результат поэлементного сложения A+B
+class SafeArray {
+private:
+    int* data;
+    size_t size;
+
+public:
+    SafeArray(size_t s = 0) : size(s) {
+        data = (size > 0) ? new int[size]() : nullptr;
+    }
+
+    SafeArray(const SafeArray& other) : size(other.size) {
+        data = new int[size];
+        for (size_t i = 0; i < size; i++) {
+            data[i] = other.data[i];
+        }
+    }
+
+    ~SafeArray() {
+        delete[] data;
+    }
+
+    // Метод для получения размера
+    size_t getSize() const { return size; }
+
+    // 1. operator[] (доступ)
+
+    // 2. operator= (присваивание)
+
+    // 3. operator+ (конкатенация)
+
+    // 4. operator() (изменение размера)
+};
 """
 
     def _generate_tests(self):
         random.seed(self.seed)
         self.tests = []
 
-        for _ in range(5):
-            n = random.randint(3, 5)
-            a = [random.randint(-10, 10) for _ in range(n)]
-            b = [random.randint(-10, 10) for _ in range(n)]
+        # STATIC TEST
+        a = [1, 2, 3]
+        b = [4, 5, 6]
+        n = 3
 
-            result = [a[i] + b[i] for i in range(n)]
-            expected = " ".join(map(str, result))
+        sum_arr = [a[i] + b[i] for i in range(n)]
+        copy_arr = a[:]  # deep copy
 
-            self.tests.append(TestItem(
-                input_str=f"{n}\n{' '.join(map(str,a))}\n{' '.join(map(str,b))}",
-                showed_input=f"n={n}, A={a}, B={b}",
+        expected = (
+            "SUM: "
+            + " ".join(map(str, sum_arr))
+            + "\n"
+            + "COPY: "
+            + " ".join(map(str, copy_arr))
+        )
+
+        self.tests.append(
+            TestItem(
+                input_str=f"{n}\n{' '.join(map(str, a))}\n{' '.join(map(str, b))}",
+                showed_input="arrays_static",
                 expected=expected,
-                compare_func=lambda x, y: x.strip() == y.strip()
-            ))
+                compare_func=lambda x, y: x.strip() == y.strip(),
+            )
+        )
+
+        # RANDOM TESTS
+        for _ in range(4):
+            n = random.randint(3, 6)
+            a = [random.randint(0, 10) for _ in range(n)]
+            b = [random.randint(0, 10) for _ in range(n)]
+
+            sum_arr = [a[i] + b[i] for i in range(n)]
+            copy_arr = a[:]
+
+            expected = (
+                "SUM: "
+                + " ".join(map(str, sum_arr))
+                + "\n"
+                + "COPY: "
+                + " ".join(map(str, copy_arr))
+            )
+
+            self.tests.append(
+                TestItem(
+                    input_str=f"{n}\n{' '.join(map(str, a))}\n{' '.join(map(str, b))}",
+                    showed_input="arrays_random",
+                    expected=expected,
+                    compare_func=lambda x, y: x.strip() == y.strip(),
+                )
+            )

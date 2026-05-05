@@ -11,8 +11,17 @@ int main() {
     for (int i = 0; i < n; i++) cin >> a[i];
     for (int i = 0; i < n; i++) cin >> b[i];
 
+    cout << "SUM: ";
     for (int i = 0; i < n; i++) {
-        cout << a[i] + b[i] << " ";
+        if (i) cout << " ";
+        cout << a[i] + b[i];
+    }
+    cout << "\n";
+
+    cout << "COPY: ";
+    for (int i = 0; i < n; i++) {
+        if (i) cout << " ";
+        cout << a[i];
     }
 
     return 0;
