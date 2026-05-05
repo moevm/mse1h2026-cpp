@@ -102,7 +102,6 @@ class BaseTaskClass:
             compile_args_list = [compiler, solution_name] + obj_files + shlex.split(compile_args) + ["-o", output_file]
         else:
             compile_args_list = [compiler, solution_name] + shlex.split(compile_args) + ["-o", output_file]
-
         try:
             p = subprocess.run(
                 compile_args_list,
@@ -152,17 +151,15 @@ class BaseTaskClass:
         """
         Run solution natively (compiled with gcc)
         """
-        print()
         # Формируем путь к исполняемому файлу
         if self.jail_path and self.jail_path.strip():
             output_folder = os.path.dirname(self.solution)
             prog_path = os.path.join(output_folder, self.prog_name)
-            run_command = f"{self.jail_exec} {self.jail_path} {prog_path} {prog_args}"
+            run_command = f"{prog_path} {prog_args}"
         else:
             output_folder = os.path.dirname(self.solution)
             prog_path = os.path.join(output_folder, self.prog_name)
             run_command = f"{prog_path} {prog_args}"
-
 
         try:
             p = subprocess.run(
