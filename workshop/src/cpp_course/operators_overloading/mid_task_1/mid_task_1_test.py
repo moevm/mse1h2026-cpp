@@ -61,8 +61,17 @@ public:
         b = [4, 5, 6]
         n = 3
 
-        sum_arr = [a[i] + b[i] for i in range(n)]
-        copy_arr = a[:]  # deep copy
+        original_a = a[:]
+
+        # COPY (before mutation)
+        copy_arr = original_a[:]
+
+        # MUTATION TEST
+        a[0] = 999
+
+        copy_arr = original_a[:]
+
+        sum_arr = a + b
 
         expected = (
             "SUM: "
@@ -87,8 +96,20 @@ public:
             a = [random.randint(0, 10) for _ in range(n)]
             b = [random.randint(0, 10) for _ in range(n)]
 
-            sum_arr = [a[i] + b[i] for i in range(n)]
-            copy_arr = a[:]
+            
+            original_a = a[:]
+
+            # COPY before mutation
+            copy_arr = original_a[:]
+
+            # MUTATION TEST
+            a[0] = a[0] + 1000
+
+            # COPY
+            copy_arr = original_a[:]
+
+            # CONCATENATION
+            sum_arr = a + b
 
             expected = (
                 "SUM: "

@@ -56,47 +56,75 @@ public:
 };
 """
 
-    def _generate_tests(self):
-        random.seed(self.seed)
-        self.tests = []
+def _generate_tests(self):
+    import math
+    random.seed(self.seed)
+    self.tests = []
 
-        # STATIC TEST
-        a, b, c, d = 1, 2, 2, 4  # equal fractions
+    # STATIC TEST
+    a, b, c, d = 1, 2, 2, 4  # equal fractions
 
+    if b == 0 or d == 0:
+        expected = "undefined\n0"
+    else:
         num = a * d + c * b
         den = b * d
+
+        # reduce fraction
+        g = math.gcd(num, den)
+        num //= g
+        den //= g
+
+        # normalize sign
+        if den < 0:
+            num = -num
+            den = -den
+
         equal = 1
 
         expected = f"{num}/{den}\n{equal}"
 
-        self.tests.append(
-            TestItem(
-                input_str=f"{a} {b} {c} {d}",
-                showed_input="equal_fractions",
-                expected=expected,
-                compare_func=lambda x, y: x.strip() == y.strip(),
-            )
+    self.tests.append(
+        TestItem(
+            input_str=f"{a} {b} {c} {d}",
+            showed_input="equal_fractions",
+            expected=expected,
+            compare_func=lambda x, y: x.strip() == y.strip(),
         )
+    )
 
-        # RANDOM TESTS
-        for _ in range(4):
-            a = random.randint(1, 5)
-            b = random.randint(1, 5)
-            c = random.randint(1, 5)
-            d = random.randint(1, 5)
+    # RANDOM TESTS
+    for _ in range(4):
+        a = random.randint(1, 5)
+        b = random.randint(1, 5)
+        c = random.randint(1, 5)
+        d = random.randint(1, 5)
 
+        if b == 0 or d == 0:
+            expected = "undefined\n0"
+        else:
             num = a * d + c * b
             den = b * d
+
+            # reduce fraction
+            g = math.gcd(num, den)
+            num //= g
+            den //= g
+
+            # normalize sign
+            if den < 0:
+                num = -num
+                den = -den
 
             equal = 1 if (a * d == c * b) else 0
 
             expected = f"{num}/{den}\n{equal}"
 
-            self.tests.append(
-                TestItem(
-                    input_str=f"{a} {b} {c} {d}",
-                    showed_input="fractions_random",
-                    expected=expected,
-                    compare_func=lambda x, y: x.strip() == y.strip(),
-                )
+        self.tests.append(
+            TestItem(
+                input_str=f"{a} {b} {c} {d}",
+                showed_input="fractions_random",
+                expected=expected,
+                compare_func=lambda x, y: x.strip() == y.strip(),
             )
+        )
