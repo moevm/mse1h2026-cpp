@@ -173,6 +173,9 @@ docker run --rm -v "<полный путь к папке с решением>/:/
 # Итерация №3
 ### Презентация
 [ссылка](https://github.com/moevm/mse1h2026-cpp/blob/reports/docs/iteration_3/mse-cpp-iter3.pdf)
+
+### Скринкасты
+[ссылка](https://github.com/moevm/mse1h2026-cpp/blob/reports/docs/iteration_3/screencast_iter3.mp4)
 ### Запланированные задачи
     - Интегрировать 3 задачи на C++ в систему
     - Дополнить функциональность системы для внедрения в LMS
