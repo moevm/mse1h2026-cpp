@@ -1,8 +1,11 @@
 from ....base_module import BaseTaskClass, TestItem
 import random
+import math
 
 
 class OperatorsOverloadingMid2Test(BaseTaskClass):
+    """Operators overloading -- Mid_difficulty_task_2 (Fraction)"""
+
     def __init__(self, seed: int = 42, **kwargs):
         super().__init__(compile_name="program", seed=seed, **kwargs)
 
@@ -16,6 +19,8 @@ class OperatorsOverloadingMid2Test(BaseTaskClass):
 
 Исходный код
 #include <iostream>
+#include <numeric>   // для std::gcd
+#include <stdexcept>
 
 class Fraction {
 private:
@@ -56,75 +61,86 @@ public:
 };
 """
 
-def _generate_tests(self):
-    import math
-    random.seed(self.seed)
-    self.tests = []
+    def _generate_tests(self):
+        random.seed(self.seed)
+        self.tests = []
 
-    # STATIC TEST
-    a, b, c, d = 1, 2, 2, 4  # equal fractions
-
-    if b == 0 or d == 0:
-        expected = "undefined\n0"
-    else:
-        num = a * d + c * b
-        den = b * d
-
-        # reduce fraction
-        g = math.gcd(num, den)
-        num //= g
-        den //= g
-
-        # normalize sign
-        if den < 0:
-            num = -num
-            den = -den
-
-        equal = 1
-
-        expected = f"{num}/{den}\n{equal}"
-
-    self.tests.append(
-        TestItem(
-            input_str=f"{a} {b} {c} {d}",
-            showed_input="equal_fractions",
-            expected=expected,
-            compare_func=lambda x, y: x.strip() == y.strip(),
-        )
-    )
-
-    # RANDOM TESTS
-    for _ in range(4):
-        a = random.randint(1, 5)
-        b = random.randint(1, 5)
-        c = random.randint(1, 5)
-        d = random.randint(1, 5)
-
-        if b == 0 or d == 0:
-            expected = "undefined\n0"
-        else:
+        # Helper to compute expected output for (a/b + c/d) and equality check
+        def expected_sum_eq(a, b, c, d):
+            if b == 0 or d == 0:
+                return "undefined\n0"
             num = a * d + c * b
             den = b * d
-
-            # reduce fraction
             g = math.gcd(num, den)
             num //= g
             den //= g
-
-            # normalize sign
             if den < 0:
                 num = -num
                 den = -den
+            eq = 1 if a * d == c * b else 0
+            if den == 1:
+                return f"{num}\n{eq}"
+            return f"{num}/{den}\n{eq}"
 
-            equal = 1 if (a * d == c * b) else 0
+        # --- Edge cases ---
 
-            expected = f"{num}/{den}\n{equal}"
+        self.tests.append(TestItem(
+            input_str="1 0 2 3",
+            showed_input="zero_denominator",
+            expected="undefined\n0",
+            compare_func=lambda x, y: x.strip() == y.strip()
+        ))
 
-        self.tests.append(
-            TestItem(
+        # Both fractions equal (reduction check)
+        self.tests.append(TestItem(
+            input_str="1 2 2 4",
+            showed_input="equal_fractions",
+            expected=expected_sum_eq(1, 2, 2, 4),
+            compare_func=lambda x, y: x.strip() == y.strip()
+        ))
+
+        # Negative denominator
+        self.tests.append(TestItem(
+            input_str="1 -2 1 3",
+            showed_input="negative_denominator",
+            expected=expected_sum_eq(1, -2, 1, 3),
+            compare_func=lambda x, y: x.strip() == y.strip()
+        ))
+
+        # Whole numbers (denominator 1)
+        self.tests.append(TestItem(
+            input_str="3 1 5 1",
+            showed_input="whole_numbers",
+            expected="8\n0",
+            compare_func=lambda x, y: x.strip() == y.strip()
+        ))
+
+        # Result reduces to integer
+        self.tests.append(TestItem(
+            input_str="1 3 2 3",
+            showed_input="sum_to_integer",
+            expected="1\n0",
+            compare_func=lambda x, y: x.strip() == y.strip()
+        ))
+
+        # Zero numerator
+        self.tests.append(TestItem(
+            input_str="0 5 1 3",
+            showed_input="zero_numerator",
+            expected=expected_sum_eq(0, 5, 1, 3),
+            compare_func=lambda x, y: x.strip() == y.strip()
+        ))
+
+        # --- Random tests (4) ---
+        for _ in range(4):
+            a = random.randint(-5, 5)
+            b = random.randint(1, 5)  # avoid zero
+            c = random.randint(-5, 5)
+            d = random.randint(1, 5)
+            expected = expected_sum_eq(a, b, c, d)
+            self.tests.append(TestItem(
                 input_str=f"{a} {b} {c} {d}",
-                showed_input="fractions_random",
+                showed_input="random",
                 expected=expected,
-                compare_func=lambda x, y: x.strip() == y.strip(),
-            )
-        )
+                compare_func=lambda x, y: x.strip() == y.strip()
+            ))
