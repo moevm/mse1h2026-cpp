@@ -88,6 +88,8 @@ class BaseTaskClass:
             if err is not None:
                 return f"Ошибка при компиляции кода системы проверки, файл {src_file} (обратитесь за помощью к авторам курса):\n{err}"
             obj_files.append(src_file[:src_file.find('.') + 1] + "o")
+        output_folder = os.path.dirname(self.solution)
+        output_file = os.path.join(output_folder, self.prog_name)
 
         # Используем jail_path для выходного файла
         if obj_files:
@@ -143,6 +145,7 @@ class BaseTaskClass:
         """
         Run solution natively (compiled with gcc)
         """
+        print()
         # Формируем путь к исполняемому файлу
         if self.jail_path and self.jail_path.strip():
             prog_path = os.path.join(self.jail_path, self.prog_name)

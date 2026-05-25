@@ -4,14 +4,26 @@ from .concepts_hard1 import ConceptsHard1Test, concepts_hard1_parser
 from .concepts_hard2 import ConceptsHard2Test, concepts_hard2_parser
 from .exceptions_easy1 import ExceptionsEasy1Test, exceptions_easy1_parser
 from .lambda_easy1 import LambdaEasy1Test, lambda_easy1_parser
-
 from .lambda_mid1 import LambdaMid1Test, lambda_mid_1_parser
 from .lambda_mid2 import LambdaMid2Test, lambda_mid_2_parser
 from .oop_easy1 import OopEasy1Test, oop_easy_1_parser
 from .oop_hard1 import OopHard1Test, oop_hard_1_parser
 from .oop_hard2 import OopHard2Test, oop_hard_2_parser
+from .oop_mid1 import OopMid1Test, oop_mid_1_parser
+from .oop_mid2 import OopMid2Test, oop_mid_2_parser
+from .stl_easy1 import StlEasy1Test, stl_easy_1_parser
 
-# Собираем все парсеры в список для удобства
+from .operators_overloading import (
+    OperatorsOverloadingEasy1Test,
+    OperatorsOverloadingMid1Test,
+    OperatorsOverloadingMid2Test,
+    easy_task_1_parser,
+    mid_task_1_parser,
+    mid_task_2_parser,
+)
+
+
+# Собираем все парсеры в список
 PARSERS = [
     concepts_easy1_parser,
     concepts_hard1_parser,
@@ -22,15 +34,22 @@ PARSERS = [
     lambda_mid_1_parser,
     lambda_mid_2_parser,
     oop_easy_1_parser,
+    oop_mid_1_parser,
+    oop_mid_2_parser,
     oop_hard_1_parser,
     oop_hard_2_parser,
+    stl_easy_1_parser,
+
+    easy_task_1_parser,
+    mid_task_1_parser,
+    mid_task_2_parser,
 ]
+
 
 # Экспортируем все
 __all__ = [
-    PARSERS,
+    "PARSERS",
 
-    # Классы проверки заданий
     'ConceptsEasy1Test',
     'ConceptsHard1Test',
     'ConceptsHard2Test',
@@ -40,6 +59,13 @@ __all__ = [
     'LambdaMid1Test',
     'LambdaMid2Test',
     'OopEasy1Test',
+    'OopMid1Test',
+    'OopMid2Test',
     'OopHard1Test',
     'OopHard2Test',
+    'StlEasy1Test',
+	
+    'OperatorsOverloadingEasy1Test',
+    'OperatorsOverloadingMid1Test',
+    'OperatorsOverloadingMid2Test',
 ]
