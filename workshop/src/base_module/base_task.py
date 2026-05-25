@@ -1,3 +1,4 @@
+import sys
 from typing import Optional, Callable
 import enum
 import os
@@ -43,7 +44,7 @@ class BaseTaskClass:
         self._array_align = array_align
         self.allowed_symbols = []
         self.jail_exec = jail_exec
-        self.jail_path = jail_path if jail_path is not None else os.environ.get("JAIL_PATH", "")
+        self.jail_path = jail_path if jail_path is not None else os.environ.get("JAIL_PATH", str(Path.cwd()))
         self.output_type = output_type
 
     def check_sol_prereq(self) -> Optional[str]:
@@ -78,14 +79,7 @@ class BaseTaskClass:
         except UnicodeDecodeError:
             return f"Ошибка декодирования вывода. Ожидалась UTF-8, получены бинарные данные: {p.stdout!r}"
 
-    def _compile_internal(
-            self,
-            compiler,
-            compile_args
-    ) -> Optional[str]:
-        """
-        General method to compile C work
-        """
+    def _compile_internal(self, compiler, compile_args) -> Optional[str]:
         solution_name = self.solution
         obj_files = []
 
@@ -93,34 +87,33 @@ class BaseTaskClass:
             err = self._compile_file(src_file, compiler, compile_args)
             if err is not None:
                 return f"Ошибка при компиляции кода системы проверки, файл {src_file} (обратитесь за помощью к авторам курса):\n{err}"
-
             obj_files.append(src_file[:src_file.find('.') + 1] + "o")
         output_folder = os.path.dirname(self.solution)
         output_file = os.path.join(output_folder, self.prog_name)
 
+        # Используем jail_path для выходного файла
         if obj_files:
-            compile_args_list = [compiler, solution_name] + obj_files + shlex.split(compile_args) + ["-o", output_file]
+            compile_args_list = [compiler, solution_name] + obj_files + shlex.split(compile_args) + ["-o", self.prog_name]
         else:
-            compile_args_list = [compiler, solution_name] + shlex.split(compile_args) + ["-o", output_file]
+            compile_args_list = [compiler, solution_name] + shlex.split(compile_args) + ["-o", self.prog_name]
 
         try:
-            p = subprocess.run(
+            p = subprocess.check_call(
                 compile_args_list,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
-                check=False,
                 timeout=self.compile_timeout
             )
         except subprocess.TimeoutExpired:
             return "Timeout при компиляции"
 
-        if p.returncode != 0:
-            output = p.stdout
+        if p != 0:
+            output = sys.stderr
             try:
                 error_msg = output.decode('utf-8')
                 return f"Ошибка при компиляции решения:\n{error_msg}"
             except UnicodeDecodeError:
-                return f"Ошибка при компиляции решения:\n{output.decode('latin-1', errors='replace')}"
+                return f"Ошибка при компиляции решения:\n{output}"
         return None
 
     def compile(self) -> Optional[str]:
@@ -155,15 +148,12 @@ class BaseTaskClass:
         print()
         # Формируем путь к исполняемому файлу
         if self.jail_path and self.jail_path.strip():
-            output_folder = os.path.dirname(self.solution)
-            prog_path = os.path.join(output_folder, self.prog_name)
-            run_command = f"{self.jail_exec} {self.jail_path} {prog_path} {prog_args}"
+            prog_path = os.path.join(self.jail_path, self.prog_name)
+            run_command = f"{self.jail_path} {prog_path} {prog_args}"
         else:
-            output_folder = os.path.dirname(self.solution)
-            prog_path = os.path.join(output_folder, self.prog_name)
+            # Если jail_path пустой (локальный запуск)
+            prog_path = os.path.join(os.path.dirname(os.path.abspath(self.solution)), self.prog_name)
             run_command = f"{prog_path} {prog_args}"
-
-
         try:
             p = subprocess.run(
                 shlex.split(run_command),
