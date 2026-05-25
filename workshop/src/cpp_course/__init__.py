@@ -11,6 +11,7 @@ from .oop_hard1 import OopHard1Test, oop_hard_1_parser
 from .oop_hard2 import OopHard2Test, oop_hard_2_parser
 from .oop_mid1 import OopMid1Test, oop_mid_1_parser
 from .oop_mid2 import OopMid2Test, oop_mid_2_parser
+from .stl_easy1 import StlEasy1Test, stl_easy_1_parser
 
 from .operators_overloading import (
     OperatorsOverloadingEasy1Test,
@@ -37,6 +38,7 @@ PARSERS = [
     oop_mid_2_parser,
     oop_hard_1_parser,
     oop_hard_2_parser,
+    stl_easy_1_parser,
 
     easy_task_1_parser,
     mid_task_1_parser,
@@ -61,6 +63,7 @@ __all__ = [
     'OopMid2Test',
     'OopHard1Test',
     'OopHard2Test',
+    'StlEasy1Test',
 	
     'OperatorsOverloadingEasy1Test',
     'OperatorsOverloadingMid1Test',
