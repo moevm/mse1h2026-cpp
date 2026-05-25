@@ -90,11 +90,10 @@ class BaseTaskClass:
 
         # Используем jail_path для выходного файла
         output_file = os.path.join(self.jail_path, self.prog_name)
-
         if obj_files:
-            compile_args_list = [compiler, solution_name] + obj_files + shlex.split(compile_args) + ["-o", output_file]
+            compile_args_list = [compiler, solution_name] + obj_files + shlex.split(compile_args) + ["-o", self.prog_name]
         else:
-            compile_args_list = [compiler, solution_name] + shlex.split(compile_args) + ["-o", output_file]
+            compile_args_list = [compiler, solution_name] + shlex.split(compile_args) + ["-o", self.prog_name]
 
         try:
             p = subprocess.run(
