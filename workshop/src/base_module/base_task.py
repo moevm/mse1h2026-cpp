@@ -43,7 +43,7 @@ class BaseTaskClass:
         self._array_align = array_align
         self.allowed_symbols = []
         self.jail_exec = jail_exec
-        self.jail_path = jail_path if jail_path is not None else os.environ.get("JAIL_PATH", "")
+        self.jail_path = jail_path if jail_path is not None else os.environ.get("JAIL_PATH", str(Path.cwd()))
         self.output_type = output_type
 
     def check_sol_prereq(self) -> Optional[str]:
@@ -89,18 +89,16 @@ class BaseTaskClass:
             obj_files.append(src_file[:src_file.find('.') + 1] + "o")
 
         # Используем jail_path для выходного файла
-        output_file = os.path.join(self.jail_path, self.prog_name)
         if obj_files:
             compile_args_list = [compiler, solution_name] + obj_files + shlex.split(compile_args) + ["-o", self.prog_name]
         else:
             compile_args_list = [compiler, solution_name] + shlex.split(compile_args) + ["-o", self.prog_name]
 
         try:
-            p = subprocess.run(
+            p = subprocess.check_call(
                 compile_args_list,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
-                check=False,
                 timeout=self.compile_timeout
             )
         except subprocess.TimeoutExpired:
