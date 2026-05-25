@@ -1,3 +1,4 @@
+import sys
 from typing import Optional, Callable
 import enum
 import os
@@ -104,13 +105,13 @@ class BaseTaskClass:
         except subprocess.TimeoutExpired:
             return "Timeout при компиляции"
 
-        if p.returncode != 0:
-            output = p.stdout
+        if p != 0:
+            output = sys.stderr
             try:
                 error_msg = output.decode('utf-8')
                 return f"Ошибка при компиляции решения:\n{error_msg}"
             except UnicodeDecodeError:
-                return f"Ошибка при компиляции решения:\n{output.decode('latin-1', errors='replace')}"
+                return f"Ошибка при компиляции решения:\n{output}"
         return None
 
     def compile(self) -> Optional[str]:
